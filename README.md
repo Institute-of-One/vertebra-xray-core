@@ -152,12 +152,45 @@ python -m pytest        # 133 tests, about seven seconds
 python examples/reproduce_findings.py
 ```
 
+## Validation
+
+Two things are validated separately, because they fail for different reasons.
+
+**The geometry** is checked against phantoms whose angles are known in closed
+form, so an implementation error of a tenth of a degree is visible and there
+is no annotator's spread underneath it.
+
+**The anatomy** is checked against [VerSe](https://github.com/anjany/verse), a
+CT benchmark with hand-corrected vertebral level identification. CT is the
+only realistic source of ground-truth axial rotation -- no pair of radiographs
+can supply it -- and VerSe is deliberately enriched with transitional
+vertebrae and enumeration anomalies, which are exactly the spines a level
+count cannot get right. `vertebra_xray_core.ct` measures each vertebra from a
+segmentation mask and `tools/validate_verse.py` runs the pipeline over a
+release.
+
+Landmark detection from radiographic pixels is **not** under test anywhere:
+this package is the measurement layer, and detector error is handled
+analytically by `uncertainty`. Using VerSe requires the three citations its
+terms specify, listed in `datasets/verse.py`.
+
+## Figures
+
+```bash
+python tools/make_figures.py --out paper/figures
+```
+
+Every figure comes from a phantom, so none of them carries patient data or a
+dataset licence, and they are identical on any machine. Real images are needed
+for at most one qualitative panel.
+
 ## Status
 
-Alpha. The measurement core, the labelling, the phantoms and the uncertainty
-model are implemented and tested. Still to come: DICOM ingest for long-film
-studies, adapters for public landmark datasets, corner extraction from CT
-segmentations, and the figure scripts for the manuscript.
+Alpha. The measurement core, the labelling, the three-dimensional
+reconstruction, the CT path, the phantoms, the uncertainty model, the figures
+and the VerSe adapter are implemented and tested. Still to come: DICOM ingest
+for long-film studies, corner extraction from TotalSegmentator output, and the
+manuscript itself.
 
 ## Licence
 
