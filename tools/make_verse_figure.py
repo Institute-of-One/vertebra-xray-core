@@ -150,7 +150,7 @@ def figure(curves, scans, out: Path) -> None:
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     parser.add_argument("--root", required=True)
-    parser.add_argument("--out", default="paper/figures/fig2_verse.png")
+    parser.add_argument("--out", default="paper/figures/fig3_verse.png")
     args = parser.parse_args(argv)
     curves, scans = gather(args.root)
     if not curves:

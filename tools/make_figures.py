@@ -23,8 +23,8 @@ import numpy as np  # noqa: E402
 from vertebra_xray_core import (  # noqa: E402
     cobb,
     cobb3d,
-    labeling,
     phantom,
+    simulate,
     uncertainty,
     viz,
 )
@@ -40,6 +40,8 @@ from vertebra_xray_core.spine3d import (  # noqa: E402
     axial_rotation_bias,
     endplate_normal,
 )
+
+NL = chr(10)
 
 PA = Projection(view="pa")
 LAT = Projection(view="lateral")
@@ -60,61 +62,23 @@ def _case():
     return phantom.adolescent_idiopathic_scoliosis(main_thoracic_deg=50.0, lumbar_deg=32.0)
 
 
-def figure_overview(out: Path) -> None:
-    """The method end to end on one spine."""
+def figure_planes(out: Path) -> None:
+    """The angle depends on the plane it is measured in, and by how much."""
     model = _case()
-    frontal = model.project(PA)
-    lateral = model.project(LAT).with_labels(None)
-    curves = cobb.cobb_angles(frontal).curves
+    curves = cobb.cobb_angles(model.project(PA)).curves
     three_d = cobb3d.cobb3d_for_curves(model, curves)
-    major = max(three_d, key=lambda c: c.pmc_deg)
-    levels = labeling.label_by_sagittal_inflection(lateral)
-    anchor = levels.anchors[0]
 
-    fig = plt.figure(figsize=(13.0, 8.2))
-    grid = fig.add_gridspec(
-        2, 4, width_ratios=[1.0, 0.95, 0.95, 2.0], height_ratios=[1.0, 0.5], wspace=0.3, hspace=0.35
+    fig, axes = plt.subplots(1, 2, figsize=(10.5, 4.0), width_ratios=[1.35, 1.0])
+    viz.plot_pmc_profile(model, three_d, axes[0])
+    axes[0].set_title(
+        "a  a Cobb angle against the orientation of the plane it is measured in",
+        fontsize=9,
     )
-
-    ax = fig.add_subplot(grid[:, 0])
-    viz.plot_spine_3d(
-        model,
-        ax,
-        curves=curves,
-        show_normals=True,
-        pmc_plane_for=major,
-        label_every=3,
-        scale_bar_mm=100,
-        view=(12.0, 30.0),
-    )
-    ax.set_title("a  three-dimensional arrangement,\nwith the plane of maximum curvature")
-
-    ax = fig.add_subplot(grid[:, 1])
-    viz.plot_projection(frontal, ax, curves=curves)
-    ax.set_title("b  frontal projection\nand the Cobb construction")
-
-    ax = fig.add_subplot(grid[:, 2])
-    viz.plot_tilt_profile(
-        lateral.with_labels(levels.labels),
-        ax,
-        anchor_index=anchor.index,
-        anchor_position=anchor.position,
-        title="c  sagittal tilt; the curvature\nreversal anchors T12",
-    )
-
-    ax = fig.add_subplot(grid[0, 3])
-    viz.plot_pmc_profile(model, three_d, ax)
-    ax.set_title("d  Cobb angle against measurement-plane orientation")
-
-    ax = fig.add_subplot(grid[1, 3])
     viz.plot_axial_path(
-        model,
-        ax,
-        measurements=three_d,
-        title="e  the centreline seen from above, and each curve's measurement plane",
+        model, axes[1], measurements=three_d,
+        title="b  the centreline from above, with each curve's plane",
     )
-
-    _save(fig, out / "fig6_overview.png")
+    _save(fig, out / "fig4_planes.png")
 
 
 def figure_axial_rotation(out: Path) -> None:
@@ -139,7 +103,7 @@ def figure_axial_rotation(out: Path) -> None:
     axes[1].set_ylabel("coronal tilt error (deg)")
     axes[1].set_title("b  and cone-beam divergence, harmless at zero rotation, is let in")
 
-    _save(fig, out / "fig3_axial_rotation.png")
+    _save(fig, out / "fig5_axial_rotation.png")
 
 
 def figure_kyphosis(out: Path) -> None:
@@ -162,7 +126,7 @@ def figure_kyphosis(out: Path) -> None:
     ax.set_ylabel("T1-T12 sagittal angle (deg)")
     ax.set_title("kyphosis is under-read exactly where it matters")
     ax.legend(fontsize=8, frameon=False)
-    _save(fig, out / "fig4_kyphosis.png")
+    _save(fig, out / "fig6_kyphosis.png")
 
 
 def figure_uncertainty(out: Path) -> None:
@@ -210,7 +174,65 @@ def figure_uncertainty(out: Path) -> None:
     twin.spines["right"].set_visible(True)
     twin.spines["right"].set_color("#7a5b9a")
 
-    _save(fig, out / "fig5_uncertainty.png")
+    _save(fig, out / "fig7_uncertainty.png")
+
+
+def figure_landmarks(out: Path) -> None:
+    """What a detector is being asked to produce, and the spine it comes from.
+
+    Both panels are rendered from the same phantom, so the pedicle shadows in
+    the radiograph and the pedicle landmarks drawn on it are the same points.
+    No patient data and no licensed image is involved.
+    """
+    model = phantom.adolescent_idiopathic_scoliosis(
+        main_thoracic_deg=50.0, lumbar_deg=32.0, axial_rotation_deg=14.0
+    )
+    radiograph = simulate.simulate_radiograph(model, PA)
+    frontal = model.project(PA)
+    pedicle_points = viz.project_pedicles_to_view(model, PA, normative_pedicles)
+    curves = cobb.cobb_angles(frontal).curves
+    three_d = cobb3d.cobb3d_for_curves(model, curves)
+    major = max(three_d, key=lambda c: c.pmc_deg)
+
+    # Crop the films to the trunk. Left at the full rendered extent they are
+    # mostly air, and with equal aspect that makes them squat beside the
+    # three-dimensional panel.
+    trunk = float(np.median(model.centroids[:, 0]))
+    crop = (trunk - 175.0, trunk + 175.0)
+
+    fig = plt.figure(figsize=(11.0, 7.4))
+    grid = fig.add_gridspec(1, 3, width_ratios=[1.0, 1.0, 1.15], wspace=0.04)
+
+    ax = fig.add_subplot(grid[0, 0])
+    viz.plot_radiograph(radiograph, ax)
+    ax.set_xlim(*crop)
+    ax.set_title("a  simulated frontal radiograph", fontsize=9)
+
+    ax = fig.add_subplot(grid[0, 1])
+    viz.plot_radiograph(radiograph, ax, gamma=1.3)
+    ax.set_xlim(*crop)
+    viz.plot_landmark_overlay(
+        frontal, ax, pedicles=pedicle_points,
+        curves=tuple(c for c in curves if c.is_major),
+    )
+    ax.set_title(
+        "b  four corners (blue) leave rotation undetermined;"
+        + NL
+        + "two pedicles (gold) close it",
+        fontsize=9,
+    )
+
+    ax = fig.add_subplot(grid[0, 2])
+    viz.plot_spine_3d(
+        model, ax, curves=curves, show_normals=True, pmc_plane_for=major,
+        label_every=3, scale_bar_mm=100, view=(14.0, 34.0),
+    )
+    ax.set_title(
+        "c  the same spine in three dimensions," + NL + "with its measurement plane",
+        fontsize=9,
+    )
+
+    _save(fig, out / "fig1_landmarks.png")
 
 
 def figure_pedicle_requirement(out: Path) -> None:
@@ -290,7 +312,7 @@ def figure_pedicle_requirement(out: Path) -> None:
     axes[2].set_title("c  a normative table is enough")
     axes[2].legend(fontsize=7.5, frameon=False)
 
-    _save(fig, out / "fig1_pedicles.png")
+    _save(fig, out / "fig2_pedicles.png")
 
 
 def geo_angle(u, v):
@@ -307,8 +329,9 @@ def _save(fig, path: Path) -> None:
 
 
 FIGURES = {
+    "landmarks": figure_landmarks,
     "pedicles": figure_pedicle_requirement,
-    "overview": figure_overview,
+    "planes": figure_planes,
     "axial": figure_axial_rotation,
     "kyphosis": figure_kyphosis,
     "uncertainty": figure_uncertainty,

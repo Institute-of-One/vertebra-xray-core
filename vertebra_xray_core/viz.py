@@ -35,6 +35,9 @@ __all__ = [
     "plot_tilt_profile",
     "plot_pmc_profile",
     "plot_axial_path",
+    "plot_radiograph",
+    "plot_landmark_overlay",
+    "project_pedicles_to_view",
     "angle_between_normals",
     "UL",
     "UR",
@@ -526,3 +529,102 @@ def angle_between_normals(model: SpineModel3D, upper: str, lower: str) -> float:
     labels = list(model.labels)
     normals = model.endplate_normals
     return geo.angle_between(normals[labels.index(upper)], normals[labels.index(lower)])
+
+
+# --------------------------------------------------------------------------
+# radiographs and the landmarks a detector should place on them
+# --------------------------------------------------------------------------
+
+
+def plot_radiograph(radiograph, ax: Axes | None = None, *, gamma: float = 1.0) -> Axes:
+    """Draw a simulated radiograph in millimetre coordinates.
+
+    The extent is in the same ``math`` frame the landmarks are projected into,
+    so anything from
+    :meth:`~vertebra_xray_core.spine3d.SpineModel3D.project` overlays on top
+    without further transformation.
+    """
+    plt = _require_matplotlib()
+    if ax is None:
+        _, ax = plt.subplots(figsize=(4.0, 8.5))
+    image = radiograph.image ** gamma if gamma != 1.0 else radiograph.image
+    ax.imshow(
+        image, cmap="gray", origin="lower", extent=radiograph.extent, aspect="equal",
+        interpolation="bilinear",
+    )
+    ax.set_axis_off()
+    return ax
+
+
+def plot_landmark_overlay(
+    landmarks: SpineLandmarks,
+    ax: Axes,
+    *,
+    pedicles: np.ndarray | None = None,
+    curves: tuple[Curve, ...] = (),
+    label_every: int = 2,
+    corner_colour: str = "#3aa0ff",
+    pedicle_colour: str = "#ffd23a",
+    cobb_colour: str = "#ff5c5c",
+) -> Axes:
+    """Draw the landmark set a detector is being asked to produce.
+
+    Four corners per vertebral body is what current detectors output and what
+    leaves axial rotation undetermined. The two pedicle centroids are the
+    addition this package argues for, drawn in a second colour so the ask is
+    legible at a glance.
+
+    ``pedicles`` is ``(N, 2, 2)`` in the same frame as the landmarks.
+    """
+    quads = landmarks.corners
+    for index in range(len(landmarks)):
+        outline = quads[index][[UL, UR, LR, LL, UL]]
+        ax.plot(outline[:, 0], outline[:, 1], color=corner_colour, lw=0.8, alpha=0.75, zorder=10)
+        ax.plot(
+            quads[index][:, 0], quads[index][:, 1], "o", ms=3.2,
+            mfc=corner_colour, mec="#0b2b4a", mew=0.4, zorder=12,
+        )
+
+    if pedicles is not None:
+        flat = np.asarray(pedicles, dtype=float).reshape(-1, 2)
+        ax.plot(
+            flat[:, 0], flat[:, 1], "o", ms=4.2,
+            mfc=pedicle_colour, mec="#5a4400", mew=0.5, zorder=13,
+        )
+
+    for curve in curves:
+        for index, which in ((curve.upper_index, "superior"), (curve.lower_index, "inferior")):
+            pair = (UL, UR) if which == "superior" else (LL, LR)
+            a, b = quads[index][pair[0]], quads[index][pair[1]]
+            mid = 0.5 * (a + b)
+            extend = 2.6
+            ax.plot(
+                *zip(mid + extend * (a - mid), mid + extend * (b - mid), strict=True),
+                color=cobb_colour, lw=1.6, zorder=14,
+            )
+
+    if landmarks.labels is not None:
+        offset = 0.95 * float(np.median(np.linalg.norm(landmarks.body_axis, axis=1)))
+        for index, label in enumerate(landmarks.labels):
+            if index % label_every:
+                continue
+            ax.text(
+                landmarks.centroids[index, 0] - offset,
+                landmarks.centroids[index, 1],
+                label,
+                fontsize=6.5, va="center", ha="right", zorder=15,
+                color="#f2f2f2",
+                bbox={"facecolor": "#1a1a1a", "alpha": 0.55, "pad": 0.8, "edgecolor": "none"},
+            )
+    return ax
+
+
+def project_pedicles_to_view(model: SpineModel3D, projection, pedicle_table) -> np.ndarray:
+    """``(N, 2, 2)`` projected pedicle positions for overlaying on a view."""
+    out = np.empty((len(model), 2, 2))
+    rotations = model.rotations
+    for index, label in enumerate(model.labels):
+        geometry = pedicle_table(label)
+        world = model.centroids[index] + geometry.as_body_frame() @ rotations[index].T
+        out[index] = projection.project_points(world)
+    return out

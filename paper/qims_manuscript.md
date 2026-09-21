@@ -148,6 +148,9 @@ endplate-normal error < 10⁻⁶ °). With ψ unknown, it is not determined.
 
 ### 2.3 Pedicles as the third constraint
 
+**Figure 1** shows what this amounts to on a film: the four corners a detector
+already places, and the two pedicle points it is being asked to add.
+
 The pedicles lie lateral to the midline and, decisively, posterior to the
 vertebral body. Writing their centroids in the vertebra's frame as (±*a*,
 −*b*, 0), the projected midpoint of the pair leaves the body centre by
@@ -244,7 +247,7 @@ sagittal ±30°, axial ±30°), the endplate normal recovered from four corners
 per view was in error by a median of 5.50°, 90th percentile 12.99°, maximum
 22.84°, growing linearly with the rotation present to 12.8° at 30°.
 
-**Table 1** and **Figure 1a**.
+**Table 1** and **Figure 2a**.
 
 ### 3.3 Two pedicle landmarks make it identifiable
 
@@ -260,7 +263,7 @@ With exact pedicles the solution was exact (maximum error 2.5 × 10⁻¹² ° ov
 | 0.5 mm | 0.21 | 0.60 | 1.36 |
 | exact | 0.00 | 0.00 | 0.00 |
 
-Degrees of endplate-normal error. **Figure 1b.**
+Degrees of endplate-normal error. **Figure 2b.**
 
 The 90th-percentile residual crosses 1° at 0.9 mm. Published whole-spine
 landmark detectors report median localisation errors of 1.5–2.4 mm cervical,
@@ -275,7 +278,7 @@ Taking the half-separation and posterior offset from a table rather than
 measuring them cost a median of 0.13° at 1 mm of table error and 0.25° at
 2 mm. The interquartile spread observed across 400 vertebrae was 12.3–15.4 mm
 in separation and 25.0–29.4 mm in posterior offset, inside the regime where it
-does not matter. **Figure 1c**, **Table 2**.
+does not matter. **Figure 2c**, **Table 2**.
 
 | level | T1 | T4 | T7 | T10 | T12 | L1 | L3 | L5 |
 |---|---|---|---|---|---|---|---|---|
@@ -312,7 +315,7 @@ plane is tilted a median of 5.2° (maximum 28.9°) from vertical, which places
 it outside the family a rotating radiograph can realise and explains the seven
 curves in which its angle exceeded the vertical-plane maximum.
 
-**Figure 2.**
+**Figure 3.**
 
 **Cohort caveat.** VerSe is a general and fracture CT collection, not a
 scoliosis cohort: median coronal Cobb 9.5°, one curve of 70 above 25°. The
@@ -340,7 +343,7 @@ detector, that limits the result.
 **Cone-beam divergence.** With no axial rotation the chord a reader marks on a
 frontal film lies in a plane of constant depth, so both ends are magnified
 identically and the coronal tilt is exactly invariant (difference < 10⁻¹³ °).
-At 20° of axial rotation the same comparison gives 4.5° (**Figure 3**). Treating a long film
+At 20° of axial rotation the same comparison gives 4.5° (**Figure 5**). Treating a long film
 as a parallel projection is an identity, not an approximation, until the spine
 rotates.
 
@@ -348,13 +351,13 @@ rotates.
 body's antero-posterior axis out of the sagittal plane, so the
 anterior-to-posterior chord is not the sagittal trace of the endplate. On
 phantoms the T1–T12 sagittal angle was under-read by 0.0°, 1.7°, 3.5° and 8.0°
-at main thoracic curves of 0°, 25°, 50° and 75°. **Figure 4.**
+at main thoracic curves of 0°, 25°, 50° and 75°. **Figure 6.**
 
 **Uncertainty decomposition.** Under corner error the choice of end vertebrae
 contributed none of the variance below 1.5 mm, 6% at 2 mm, a third at 3 mm and
 half at 4 mm. This is a lower bound on the discrete term: independent corner
 jitter is a poor model of how two readers come to disagree about which
-vertebra ends a curve [Carman 1990]. **Figure 5.**
+vertebra ends a curve [Carman 1990]. **Figure 7.**
 
 ---
 
@@ -419,7 +422,8 @@ All results are produced by `tools/pedicle_requirement.py`,
 `tools/validate_verse.py`, `tools/make_figures.py` and
 `tools/make_verse_figure.py` in the accompanying repository
 **[TBC: URL and archived DOI]**, over the public VerSe release. Every figure
-except Figure 2 is generated from phantoms and contains no patient data.
+except Figure 3 is generated from phantoms; Figure 3 plots measurements
+computed from the public collection rather than any image from it.
 
 ---
 
@@ -439,30 +443,41 @@ this core needs declaring.]**
 
 ## Figures
 
-1. **`fig1_pedicles.png` — Two pedicle landmarks close the system.** (a)
+1. **`fig1_landmarks.png` — What a detector is being asked to place.** (a) a
+   simulated frontal radiograph of the phantom; (b) the same with the
+   landmarks overlaid, four corners per body in blue, the two pedicles in gold
+   and the Cobb construction on the main curve; (c) the same spine in three
+   dimensions with its measurement plane. All three panels are rendered from
+   one phantom, so the pedicle shadows in the film and the pedicle landmarks
+   drawn on it are the same points.
+2. **`fig2_pedicles.png` — Two pedicle landmarks close the system.** (a)
    endplate-normal error against the axial rotation present, four corners
    alone versus plus pedicles at three localisation accuracies; (b) residual
-   against pedicle localisation error, median and 90th percentile, with the
+   against pedicle localisation error, median and 90th percentile, against the
    no-pedicle baseline; (c) residual against error in the assumed pedicle
    geometry, with the observed anatomical spread shaded.
-2. **`fig2_verse.png` — The coronal projection on 28 real spines.** (a)
+3. **`fig3_verse.png` — The coronal projection on 28 real spines.** (a)
    coronal against three-dimensional angle for all 70 curves, coloured by the
    orientation of the measurement plane, with the identity line; (b)
    distribution of the shortfall; (c) endplate-normal error against the axial
    rotation actually present, with the phantom prediction as an upper bound.
-3. **`fig3_axial_rotation.png` — Two ways unmeasured rotation corrupts the
+4. **`fig4_planes.png` — The angle depends on its plane.** (a) Cobb angle as a
+   continuous function of the measurement plane's orientation for three
+   curves, with the coronal reading marked as a circle and the maximum as a
+   star; (b) the centreline seen from above with each curve's plane.
+5. **`fig5_axial_rotation.png` — Two ways unmeasured rotation corrupts the
    measurement.** (a) the orientation solve is biased; (b) cone-beam
    divergence, exactly harmless at zero rotation, is let in.
-4. **`fig4_kyphosis.png` — A lateral film under-reads kyphosis**, against the
+6. **`fig6_kyphosis.png` — A lateral film under-reads kyphosis**, against the
    size of the coronal curve.
-5. **`fig5_uncertainty.png` — Where the spread in a Cobb angle comes from.**
+7. **`fig7_uncertainty.png` — Where the spread in a Cobb angle comes from.**
    (a) interval width against corner localisation error; (b) decomposition
    into the endplate-line and end-vertebra terms, with end-vertebra stability
    on the right axis.
-6. **`fig6_overview.png` — Method overview** on one phantom spine:
-   three-dimensional arrangement with the measurement plane, frontal
-   projection with the Cobb construction, sagittal tilt profile, Cobb angle
-   against plane orientation, and the centreline seen from above.
+
+Only Figure 3 derives from patient data, and it plots measurements rather than
+images. Every other figure is rendered from a phantom and carries no patient
+data and no third-party licence.
 
 ## Tables
 
