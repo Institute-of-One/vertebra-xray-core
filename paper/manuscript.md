@@ -27,15 +27,28 @@ of radiographs can.
 inverse problem recovers every endplate normal exactly (median, 90th
 percentile and maximum error 0.00°) when axial rotation is supplied, and with
 a median error of 3.26° (p90 5.65°, max 9.30°) when it is assumed to be zero.
-The coronal projection understates the deformity by a median of 8.5° (p90
-20.9°, max 35.1°). Cone-beam divergence cannot change a coronal Cobb angle at
-all when axial rotation is zero, and changes it by 4.5° at 20° of rotation.
-A lateral radiograph under-reads T1–T12 kyphosis by 8.0° on a 75° curve.
-Landmark error propagates at roughly 3° of Cobb angle per millimetre; the
-choice of end vertebrae contributes none of the variance below 1.5 mm and half
-of it at 4 mm.
+Across 70 curves the angle in the plane of maximum curvature exceeded the
+coronal angle in **every one**, by a median of 7.2° (p90 22.8°, max 37.0°);
+the effect persists under 2 mm of injected landmark error. Cone-beam
+divergence cannot change a coronal Cobb angle at all when axial rotation is
+zero, and changes it by 4.5° at 20° of rotation. A lateral radiograph
+under-reads T1–T12 kyphosis by 8.0° on a 75° curve. Landmark error propagates
+at roughly 3° of Cobb angle per millimetre, and the choice of end vertebrae
+contributes none of the variance below 1.5 mm and half of it at 4 mm.
 
-**Conclusion.** *(to be written)*
+**Conclusion.** The coronal projection systematically under-reads spinal
+deformity, and the shortfall is set by the curve's sagittal component rather
+than its coronal size, so it is largest in the thoracolumbar and lumbar spine.
+Axial rotation is the one quantity two radiographs cannot supply and the one
+that most corrupts what they do supply; it should be measured rather than
+assumed. A Cobb angle reported without an interval is reported without its
+resolution, and the interval is computable per patient.
+
+**Stated limitation.** The cohort is a general and fracture CT collection, not
+a scoliosis one — median coronal Cobb 9.5°, one curve of 70 above 25° — so the
+*direction* and *mechanism* of the shortfall are established here on real
+anatomy but its *magnitude in scoliosis* is not. Landmark detection from
+radiographic pixels is outside the scope of this work by design.
 
 ---
 
