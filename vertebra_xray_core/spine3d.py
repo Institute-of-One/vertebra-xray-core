@@ -71,6 +71,7 @@ __all__ = [
     "rot_y",
     "rot_z",
     "orientation_matrix",
+    "euler_from_matrix",
     "endplate_normal",
     "solve_orientation",
     "reconstruct_from_biplanar",
@@ -109,6 +110,30 @@ def rot_z(deg: float) -> np.ndarray:
 def orientation_matrix(theta: float, phi: float, psi: float) -> np.ndarray:
     """``R_y(theta) R_x(phi) R_z(psi)`` for one vertebra, angles in degrees."""
     return rot_y(theta) @ rot_x(phi) @ rot_z(psi)
+
+
+def euler_from_matrix(rotation: np.ndarray) -> tuple[float, float, float]:
+    """Recover ``(theta, phi, psi)`` in degrees from an orientation matrix.
+
+    Inverts :func:`orientation_matrix`. The endplate normal is the third
+    column, ``(-sin(theta) cos(phi), -sin(phi), cos(theta) cos(phi))``, which
+    gives ``phi`` and ``theta`` directly; stripping those two rotations leaves
+    a pure rotation about ``z`` whose angle is ``psi``.
+
+    Degenerate at ``phi = +-90 deg``, where coronal tilt and axial rotation
+    become the same motion. No vertebra is anywhere near that, so the case is
+    not handled specially -- it would be a sign the input is not a vertebral
+    orientation at all.
+    """
+    r = np.asarray(rotation, dtype=float)
+    if r.shape != (3, 3):
+        raise ValueError(f"expected a 3x3 matrix, got {r.shape}")
+    normal = r[:, 2]
+    phi = float(np.degrees(np.arcsin(np.clip(-normal[1], -1.0, 1.0))))
+    theta = float(np.degrees(np.arctan2(-normal[0], normal[2])))
+    residual = rot_x(-phi) @ rot_y(-theta) @ r
+    psi = float(np.degrees(np.arctan2(residual[1, 0], residual[0, 0])))
+    return theta, phi, psi
 
 
 def endplate_normal(theta: float, phi: float) -> np.ndarray:
