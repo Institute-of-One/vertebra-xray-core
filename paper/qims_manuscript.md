@@ -340,7 +340,7 @@ detector, that limits the result.
 **Cone-beam divergence.** With no axial rotation the chord a reader marks on a
 frontal film lies in a plane of constant depth, so both ends are magnified
 identically and the coronal tilt is exactly invariant (difference < 10⁻¹³ °).
-At 20° of axial rotation the same comparison gives 4.5°. Treating a long film
+At 20° of axial rotation the same comparison gives 4.5° (**Figure 3**). Treating a long film
 as a parallel projection is an identity, not an approximation, until the spine
 rotates.
 
@@ -348,13 +348,13 @@ rotates.
 body's antero-posterior axis out of the sagittal plane, so the
 anterior-to-posterior chord is not the sagittal trace of the endplate. On
 phantoms the T1–T12 sagittal angle was under-read by 0.0°, 1.7°, 3.5° and 8.0°
-at main thoracic curves of 0°, 25°, 50° and 75°. **Figure 3.**
+at main thoracic curves of 0°, 25°, 50° and 75°. **Figure 4.**
 
 **Uncertainty decomposition.** Under corner error the choice of end vertebrae
 contributed none of the variance below 1.5 mm, 6% at 2 mm, a third at 3 mm and
 half at 4 mm. This is a lower bound on the discrete term: independent corner
 jitter is a poor model of how two readers come to disagree about which
-vertebra ends a curve [Carman 1990]. **Figure 4.**
+vertebra ends a curve [Carman 1990]. **Figure 5.**
 
 ---
 
@@ -439,24 +439,30 @@ this core needs declaring.]**
 
 ## Figures
 
-1. **Pedicles close the system.** (a) endplate-normal error against axial
-   rotation, four corners alone versus plus pedicles at three localisation
-   accuracies; (b) residual against pedicle localisation error, median and
-   90th percentile, with the no-pedicle baseline; (c) residual against error
-   in the assumed pedicle geometry, with the observed anatomical spread
-   shaded.
-2. **The coronal projection on real spines.** (a) coronal against
-   three-dimensional angle for all 70 curves, coloured by the orientation of
-   the measurement plane; (b) distribution of the shortfall; (c)
-   endplate-normal error against the axial rotation actually present, with the
-   phantom prediction.
-3. **Kyphosis under-read on a lateral film**, against the coronal curve size.
-4. **Where the spread in a Cobb angle comes from.** (a) interval width against
-   corner error; (b) decomposition into endplate-line and end-vertebra terms.
-5. **Method overview** on one phantom spine: three-dimensional arrangement
-   with the measurement plane, frontal projection with the Cobb construction,
-   sagittal tilt profile, angle against plane orientation, and the centreline
-   from above.
+1. **`fig1_pedicles.png` — Two pedicle landmarks close the system.** (a)
+   endplate-normal error against the axial rotation present, four corners
+   alone versus plus pedicles at three localisation accuracies; (b) residual
+   against pedicle localisation error, median and 90th percentile, with the
+   no-pedicle baseline; (c) residual against error in the assumed pedicle
+   geometry, with the observed anatomical spread shaded.
+2. **`fig2_verse.png` — The coronal projection on 28 real spines.** (a)
+   coronal against three-dimensional angle for all 70 curves, coloured by the
+   orientation of the measurement plane, with the identity line; (b)
+   distribution of the shortfall; (c) endplate-normal error against the axial
+   rotation actually present, with the phantom prediction as an upper bound.
+3. **`fig3_axial_rotation.png` — Two ways unmeasured rotation corrupts the
+   measurement.** (a) the orientation solve is biased; (b) cone-beam
+   divergence, exactly harmless at zero rotation, is let in.
+4. **`fig4_kyphosis.png` — A lateral film under-reads kyphosis**, against the
+   size of the coronal curve.
+5. **`fig5_uncertainty.png` — Where the spread in a Cobb angle comes from.**
+   (a) interval width against corner localisation error; (b) decomposition
+   into the endplate-line and end-vertebra terms, with end-vertebra stability
+   on the right axis.
+6. **`fig6_overview.png` — Method overview** on one phantom spine:
+   three-dimensional arrangement with the measurement plane, frontal
+   projection with the Cobb construction, sagittal tilt profile, Cobb angle
+   against plane orientation, and the centreline seen from above.
 
 ## Tables
 

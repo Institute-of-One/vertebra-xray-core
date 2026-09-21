@@ -114,19 +114,19 @@ def figure_overview(out: Path) -> None:
         title="e  the centreline seen from above, and each curve's measurement plane",
     )
 
-    _save(fig, out / "fig1_overview.png")
+    _save(fig, out / "fig6_overview.png")
 
 
 def figure_axial_rotation(out: Path) -> None:
-    """What assuming no axial rotation costs, by three independent routes."""
-    fig, axes = plt.subplots(1, 3, figsize=(12.0, 3.6))
+    """The two ways unmeasured axial rotation corrupts a biplanar measurement."""
+    fig, axes = plt.subplots(1, 2, figsize=(8.6, 3.6))
     psis = np.linspace(0.0, 30.0, 31)
 
     bias = [axial_rotation_bias(20.0, -15.0, float(p))["normal_error_deg"] for p in psis]
     axes[0].plot(psis, bias, color="#b03030", lw=1.8)
     axes[0].set_xlabel("axial rotation assumed to be zero (deg)")
     axes[0].set_ylabel("error in the endplate normal (deg)")
-    axes[0].set_title("a  biased reconstruction")
+    axes[0].set_title("a  the orientation solve is biased")
 
     divergence = []
     for p in psis[::3]:
@@ -137,33 +137,9 @@ def figure_axial_rotation(out: Path) -> None:
     axes[1].plot(psis[::3], divergence, color="#2f6f4f", lw=1.8, marker="o", ms=3)
     axes[1].set_xlabel("axial rotation (deg)")
     axes[1].set_ylabel("coronal tilt error (deg)")
-    axes[1].set_title("b  cone-beam divergence\nis harmless until the spine rotates")
+    axes[1].set_title("b  and cone-beam divergence, harmless at zero rotation, is let in")
 
-    single, both = [], []
-    for p in psis[::3]:
-        model = phantom.adolescent_idiopathic_scoliosis(axial_rotation_deg=float(p))
-        frontal = model.project(PA).with_labels(None)
-        lateral = model.project(LAT).with_labels(None)
-        try:
-            single.append(labeling.label_by_sagittal_inflection(lateral).labels == model.labels)
-        except ValueError:
-            single.append(False)
-        both.append(
-            labeling.label_biplanar(
-                frontal, lateral, axial_rotation_deg=np.full(len(model), float(p))
-            ).labels
-            == model.labels
-        )
-    axes[2].step(psis[::3], np.array(single, dtype=float), where="mid", lw=1.8, label="one lateral film")
-    axes[2].step(psis[::3], np.array(both, dtype=float), where="mid", lw=1.8, label="biplanar, two-pass")
-    axes[2].set_ylim(-0.1, 1.15)
-    axes[2].set_yticks([0, 1])
-    axes[2].set_yticklabels(["wrong", "correct"])
-    axes[2].set_xlabel("axial rotation (deg)")
-    axes[2].set_title("c  vertebral levels")
-    axes[2].legend(fontsize=8, frameon=False, loc="center left")
-
-    _save(fig, out / "fig2_axial_rotation.png")
+    _save(fig, out / "fig3_axial_rotation.png")
 
 
 def figure_kyphosis(out: Path) -> None:
@@ -186,7 +162,7 @@ def figure_kyphosis(out: Path) -> None:
     ax.set_ylabel("T1-T12 sagittal angle (deg)")
     ax.set_title("kyphosis is under-read exactly where it matters")
     ax.legend(fontsize=8, frameon=False)
-    _save(fig, out / "fig3_kyphosis.png")
+    _save(fig, out / "fig4_kyphosis.png")
 
 
 def figure_uncertainty(out: Path) -> None:
@@ -234,7 +210,7 @@ def figure_uncertainty(out: Path) -> None:
     twin.spines["right"].set_visible(True)
     twin.spines["right"].set_color("#7a5b9a")
 
-    _save(fig, out / "fig4_uncertainty.png")
+    _save(fig, out / "fig5_uncertainty.png")
 
 
 def figure_pedicle_requirement(out: Path) -> None:
@@ -314,7 +290,7 @@ def figure_pedicle_requirement(out: Path) -> None:
     axes[2].set_title("c  a normative table is enough")
     axes[2].legend(fontsize=7.5, frameon=False)
 
-    _save(fig, out / "fig6_pedicle_requirement.png")
+    _save(fig, out / "fig1_pedicles.png")
 
 
 def geo_angle(u, v):
