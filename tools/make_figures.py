@@ -68,16 +68,13 @@ def figure_planes(out: Path) -> None:
     curves = cobb.cobb_angles(model.project(PA)).curves
     three_d = cobb3d.cobb3d_for_curves(model, curves)
 
-    fig, axes = plt.subplots(1, 2, figsize=(10.5, 4.0), width_ratios=[1.35, 1.0])
+    fig, axes = plt.subplots(1, 2, figsize=(11.0, 4.2), width_ratios=[1.3, 1.0])
     viz.plot_pmc_profile(model, three_d, axes[0])
-    axes[0].set_title(
-        "a  a Cobb angle against the orientation of the plane it is measured in",
-        fontsize=9,
-    )
+    axes[0].set_title("a  the angle against its measurement plane", fontsize=9)
     viz.plot_axial_path(
-        model, axes[1], measurements=three_d,
-        title="b  the centreline from above, with each curve's plane",
+        model, axes[1], measurements=three_d, title="b  the centreline from above",
     )
+    fig.subplots_adjust(wspace=0.32)
     _save(fig, out / "fig4_planes.png")
 
 
