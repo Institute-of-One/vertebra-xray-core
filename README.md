@@ -64,9 +64,19 @@ continuously, and the plane where it peaks is the one that describes the
 deformity. Every curve is reported in the coronal plane, in the sagittal
 plane, and in its plane of maximum curvature.
 
+Measured on 28 spines from VerSe: across 70 curves the three-dimensional angle
+exceeded the coronal one in **every single case**, by a median of 7.2 degrees
+and a 90th percentile of 22.8. The shortfall is set by the curve's *sagittal*
+component rather than its coronal size, so it is largest in the thoracolumbar
+and lumbar spine. That cohort is a general and fracture CT collection rather
+than a scoliosis one, so the direction and the mechanism are established on
+real anatomy but the magnitude in scoliosis is not.
+
 Recovering the three-dimensional endplate normals from two films is a closed
-inverse problem that this package solves exactly, and it makes explicit what
-the two films can and cannot determine — see *Axial rotation* below.
+inverse problem that this package solves exactly — median, 90th percentile and
+maximum error of 0.00 degrees on those 28 spines when axial rotation is
+supplied — and it makes explicit what the two films can and cannot determine.
+See *Axial rotation* below.
 
 ### An interval, not just a number
 
@@ -114,6 +124,12 @@ implicitly, has three consequences this package quantifies rather than hides:
 | Error in the recovered endplate normal | 0 | 8.3 deg |
 | Coronal tilt error from beam divergence | exactly 0 | 4.5 deg |
 | Levels from a single lateral film | correct | wrong, and flagged |
+
+On real spines the same assumption costs a median of 3.26 degrees in the
+endplate normal, with a 90th percentile of 5.65 and a worst case of 9.30. At
+about 1 mm of landmark error the assumption and the detector contribute
+equally; below that the assumption dominates, so for a well-localised study it
+is the assumption and not the detector that limits the reconstruction.
 
 The middle row is worth its own sentence: with no axial rotation, cone-beam
 divergence cannot change a frontal Cobb angle at all, because the chord lies
