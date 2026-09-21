@@ -31,14 +31,19 @@ a median of 5.50 deg (p90 12.99, max 22.84) over the anatomical range of
 orientations, growing linearly to 12.8 deg at 30 deg of axial rotation. With
 them the solution is exact. Under realistic detector error the residual is a
 median of 0.43 deg at 1 mm of pedicle localisation error, and the 90th
-percentile falls below 1 deg at about 0.9 mm. Patient-specific pedicle
-geometry is unnecessary: taking it from a normative table wrong by 2 mm leaves
-a median residual of 0.25 deg. That table, pedicle half-separation and
-posterior offset per level over 400 vertebrae, is reported.
+percentile falls below 1 deg at about 0.9 mm, which is beyond published
+detector accuracy and is stated as a target. At the 2 to 4 mm detectors
+currently report, the pedicles still cut the median bias by four to six times.
+Patient-specific pedicle geometry is unnecessary: taking it from a normative
+table wrong by 2 mm leaves a median residual of 0.25 deg. That table, pedicle
+half-separation and posterior offset per level over 400 vertebrae, is
+reported.
 
 **Conclusion.** The three-dimensional angle from a biplanar landmark pair is
 unidentifiable as usually computed, and the fix is two landmarks a detector
-can already produce, placed to about a millimetre. Secondary findings: the
+can already produce. Placing them to a millimetre would make the residual
+negligible; placing them no better than the four corners already are still
+removes most of the bias. Secondary findings: the
 exact coupling between the measured lateral tilt and the true sagittal tilt,
 the fact that cone-beam divergence cannot perturb a coronal Cobb angle at zero
 axial rotation, and a per-patient interval on the Cobb angle.
@@ -307,6 +312,31 @@ same ordering holds: a median residual of 0.55 deg without pedicles against
 
 *Figure 6.*
 
+### 3.2c Is the requirement reachable, and does it help before it is reached?
+
+Published deep-learning landmark detectors on whole-spine radiographs report
+median localisation errors of 1.5 to 2.4 mm in the cervical spine, 2.1 to
+3.0 mm lumbosacral, and 2.4 to 4.3 mm thoracic. **The 0.9 mm needed for a
+90th-percentile residual below one degree is therefore beyond what is
+published today**, and is stated here as a target rather than a current
+capability.
+
+It does not have to be reached to be worth doing. At the accuracy detectors
+already achieve, the pedicles still remove most of the bias:
+
+| pedicle localisation | median | p90 | against no pedicles |
+|---|---|---|---|
+| none | 5.50 | 12.99 | -- |
+| 3 mm, thoracic as reported today | 1.27 | 3.82 | 4.3x / 3.4x better |
+| 2 mm, lumbar and cervical as reported today | 0.86 | 2.44 | 6.4x / 5.3x better |
+| 1 mm | 0.43 | 1.15 | 13x / 11x better |
+| 0.9 mm, the target | ~0.4 | ~1.0 | -- |
+
+All values in degrees. The thoracic spine is both where detectors are least
+accurate and where the deformity usually is, so that row is the one to read.
+Even there, two landmarks placed no better than the four already being placed
+cut the median error by a factor of four.
+
 ### 3.3 The coronal projection understates the deformity, in every curve measured
 
 70 curves from 28 spines.
@@ -540,3 +570,14 @@ Verified during the literature check; full citations still to be assembled.
     the piecewise-circular-arc idealisation the phantoms use.
 19. Supine versus standing radiographic measurement in scoliosis: the sagittal
     flattening that moves the thoracolumbar inflection. To be traced.
+
+**Detector accuracy, which sets whether the specification is reachable**
+
+20. Deep learning method for precise landmark identification and structural
+    assessment of whole-spine radiographs. PMC11117576. Median localisation
+    error 1.5-2.4 mm cervical, 2.1-3.0 lumbosacral, 2.4-4.3 thoracic.
+21. Deep learning approach for automatic landmark detection and alignment
+    analysis in whole-spine lateral radiographs. *Sci Rep* 2021;11.
+    PMC8027006. 2210 annotated images, 45 landmarks.
+22. 2-step deep learning model for landmark localization in spine radiographs.
+    *Sci Rep* 2021. PMC8096829.
