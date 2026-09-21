@@ -187,28 +187,45 @@ def figure_uncertainty(out: Path) -> None:
     sigmas = [0.25, 0.5, 1.0, 2.0, 3.0, 4.0]
     fig, axes = plt.subplots(1, 2, figsize=(9.5, 3.8))
 
-    for name in ("PT", "MT", "L"):
-        widths, stability = [], []
-        for sigma in sigmas:
-            result = next(
-                u
-                for u in uncertainty.bootstrap_cobb(frontal, sigma, resamples=400)
-                if u.name == name
-            )
-            widths.append(result.redetected.high - result.redetected.low)
-            stability.append(result.end_vertebra_stability)
-        axes[0].plot(sigmas, widths, marker="o", ms=3.5, lw=1.6, label=name)
-        axes[1].plot(sigmas, stability, marker="o", ms=3.5, lw=1.6, label=name)
+    sampled = {
+        sigma: uncertainty.bootstrap_cobb(frontal, sigma, resamples=600) for sigma in sigmas
+    }
 
+    for name in ("PT", "MT", "L"):
+        widths = [
+            next(u for u in sampled[sigma] if u.name == name).redetected.high
+            - next(u for u in sampled[sigma] if u.name == name).redetected.low
+            for sigma in sigmas
+        ]
+        axes[0].plot(sigmas, widths, marker="o", ms=3.5, lw=1.6, label=name)
     axes[0].set_xlabel("corner localisation error (mm)")
     axes[0].set_ylabel("width of the 95% interval (deg)")
-    axes[0].set_title("a  a Cobb angle is an interval")
+    axes[0].set_title("a  a Cobb angle is an interval, not a number")
+    axes[0].legend(fontsize=8, frameon=False)
+
+    # Decompose the spread on the main thoracic curve. The two mechanisms add
+    # in quadrature, so the shaded bands are directly comparable.
+    endplate = [next(u for u in sampled[s] if u.name == "MT").fixed.sd for s in sigmas]
+    total = [next(u for u in sampled[s] if u.name == "MT").redetected.sd for s in sigmas]
+    stability = [
+        next(u for u in sampled[s] if u.name == "MT").end_vertebra_stability for s in sigmas
+    ]
+    axes[1].fill_between(sigmas, 0, endplate, alpha=0.65, label="drawing the endplate lines")
+    axes[1].fill_between(sigmas, endplate, total, alpha=0.65, label="choosing the end vertebrae")
+    axes[1].plot(sigmas, total, color="#222222", lw=1.4)
     axes[1].set_xlabel("corner localisation error (mm)")
-    axes[1].set_ylabel("end vertebrae unchanged")
-    axes[1].set_ylim(0, 1.05)
-    axes[1].set_title("b  most of the spread is which vertebrae get picked")
-    for ax in axes:
-        ax.legend(fontsize=8, frameon=False)
+    axes[1].set_ylabel("standard deviation of the main thoracic angle (deg)")
+    axes[1].set_title("b  where the spread comes from")
+    axes[1].legend(fontsize=8, frameon=False, loc="upper left")
+
+    twin = axes[1].twinx()
+    twin.plot(sigmas, stability, color="#7a5b9a", lw=1.2, ls=":", marker="s", ms=3)
+    twin.set_ylabel("end vertebrae unchanged", fontsize=8, color="#7a5b9a")
+    twin.set_ylim(0, 1.05)
+    twin.tick_params(axis="y", labelsize=7, colors="#7a5b9a")
+    twin.spines["right"].set_visible(True)
+    twin.spines["right"].set_color("#7a5b9a")
+
     _save(fig, out / "fig4_uncertainty.png")
 
 

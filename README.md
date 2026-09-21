@@ -75,8 +75,18 @@ millimetre of corner error, which is the same order as the inter-observer
 spread reported in reader studies. `uncertainty.bootstrap_cobb` resamples
 under a stated localisation error and separates the two mechanisms behind
 that spread: the endplate lines moving, and the **end vertebrae being chosen
-differently**. The second is usually the larger one, and it is normally only
-available as a population average from a reader study rather than per patient.
+differently**.
+
+The split has a threshold in it. Under independent corner noise on a 50
+degree main thoracic curve, the discrete choice contributes nothing up to
+about 1.5 mm, 6% of the variance at 2 mm, a third at 3 mm and half at 4 mm.
+Below the threshold, a better detector buys a better angle outright; above it,
+half the error is a choice between vertebrae that no amount of line-fitting
+removes.
+
+That is a lower bound on the discrete term rather than an estimate of it:
+independent corner jitter is a poor model of how two readers disagree about
+which vertebra is the end vertebra, and the real effect is likely larger.
 
 ### Phantoms with exact ground truth
 

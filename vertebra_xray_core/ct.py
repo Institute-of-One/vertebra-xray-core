@@ -176,8 +176,14 @@ def orientation_from_points(points: np.ndarray) -> np.ndarray:
     if len(pts) < 4:
         raise ValueError(f"need at least 4 points to orient a body, got {len(pts)}")
     centred = pts - pts.mean(axis=0)
-    _, _, vectors = np.linalg.svd(centred, full_matrices=False)
-    axes = vectors  # rows are the principal directions, most-spread first
+    # Eigendecomposition of the 3x3 covariance, not an SVD of the whole point
+    # matrix. They give the same axes, but a vertebra at fine CT spacing has
+    # of the order of a million voxels and this runs a dozen times per
+    # vertebra as the body isolation converges; the covariance costs one pass
+    # over the points and a 3x3 solve, the SVD does not.
+    covariance = centred.T @ centred / len(centred)
+    _, vectors = np.linalg.eigh(covariance)
+    axes = vectors.T[::-1]  # rows: principal directions, most-spread first
 
     patient_axes = np.eye(3)  # columns X (left), Y (anterior), Z (cranial)
     alignment = np.abs(axes @ patient_axes)
@@ -302,9 +308,19 @@ def model_from_segmentation(
             f"none of the labels in the mask {sorted(np.unique(mask))[:12]} are in label_names"
         )
 
+    # One pass over the volume, then group. A per-label ``mask == label`` scan
+    # is the obvious way and costs a full sweep of a quarter-billion voxels
+    # for each of two dozen vertebrae.
+    occupied = np.argwhere(np.isin(mask, present))
+    values = mask[tuple(occupied.T)]
+    order = np.argsort(values, kind="stable")
+    occupied, values = occupied[order], values[order]
+    starts = np.searchsorted(values, present, side="left")
+    ends = np.searchsorted(values, present, side="right")
+
     measured: dict[int, VertebraGeometry] = {}
-    for label in present:
-        indices = np.argwhere(mask == label)
+    for label, start, end in zip(present, starts, ends, strict=True):
+        indices = occupied[start:end]
         if len(indices) < min_voxels:
             continue
         touches = bool((indices.min(axis=0) == 0).any() or (indices.max(axis=0) == shape - 1).any())

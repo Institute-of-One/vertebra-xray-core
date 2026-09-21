@@ -21,6 +21,14 @@ The gap between the two is the computational analogue of the clinical
 observation, and it is available per patient rather than as a population
 average from a reader study.
 
+On phantoms the gap has a threshold in it. With independent corner noise on a
+50 degree main thoracic curve, the discrete choice contributes none of the
+variance up to about 1.5 mm, 6% at 2 mm, a third at 3 mm and half at 4 mm.
+Treat that as a lower bound: independent corner jitter is a poor model of how
+two readers come to disagree about which vertebra ends a curve, and it will
+understate a mechanism that in a reader study is driven by perception rather
+than by noise.
+
 The noise model is deliberately simple and explicit: independent isotropic
 Gaussian jitter on each annotated corner, with a standard deviation the caller
 states. It is not claimed to be the true distribution of any particular
