@@ -47,7 +47,12 @@ __all__ = [
     "endplate_normal_from_core",
     "vertebra_geometry",
     "vertebra_from_mask",
+    "reopen_body",
     "model_from_segmentation",
+    "implausible_segments",
+    "implausible_dimensions",
+    "BODY_DIMENSION_RANGES_MM",
+    "MAX_SEGMENTAL_CHANGE_DEG",
 ]
 
 #: Nibabel loads a NIfTI into RAS+ world coordinates: ``+x`` right, ``+y``
@@ -415,6 +420,7 @@ def vertebra_geometry(
     *,
     posterior_points: np.ndarray | None = None,
     cranial_hint: np.ndarray | None = None,
+    all_points: np.ndarray | None = None,
     vertebra_voxels: int | None = None,
     eroded_by_mm: float = BODY_CORE_RADIUS_MM,
     touches_boundary: bool = False,
@@ -439,8 +445,11 @@ def vertebra_geometry(
         else orientation_from_core_and_posterior(pts, posterior_points, cranial_hint)
     )
     centroid = pts.mean(axis=0)
-    local = (pts - centroid) @ rotation
-    extent = local.max(axis=0) - local.min(axis=0) + 2.0 * eroded_by_mm
+    measured_on = pts if all_points is None else np.asarray(all_points, dtype=float)
+    local = (measured_on - measured_on.mean(axis=0)) @ rotation
+    extent = local.max(axis=0) - local.min(axis=0)
+    if all_points is None:
+        extent = extent + 2.0 * eroded_by_mm
     return VertebraGeometry(
         label=label,
         centroid=centroid,
@@ -494,8 +503,9 @@ def _measure(
     box = np.zeros(indices.max(axis=0) + 1 - low, dtype=bool)
     box[tuple((indices - low).T)] = True
     core, eroded_by = isolate_vertebral_body(box, spacing, radius_mm=radius_mm)
+    body = reopen_body(box, core, spacing, eroded_by) if eroded_by else box
     core_indices = np.argwhere(core) + low
-    rest_indices = np.argwhere(box & ~core) + low
+    rest_indices = np.argwhere(box & ~body) + low
 
     def to_patient(idx):
         world = np.hstack([idx, np.ones((len(idx), 1))]) @ affine.T
@@ -506,10 +516,108 @@ def _measure(
         label,
         posterior_points=to_patient(rest_indices) if len(rest_indices) else None,
         cranial_hint=cranial_hint,
+        all_points=to_patient(np.argwhere(body) + low),
         vertebra_voxels=len(indices),
         eroded_by_mm=eroded_by,
         touches_boundary=touches,
     )
+
+
+#: A segmental angle -- the change in tilt from one vertebra to the next --
+#: larger than this is not anatomy. Real segmental angles stay under about 15
+#: degrees anywhere in the spine, and under 10 through most of it.
+MAX_SEGMENTAL_CHANGE_DEG = 25.0
+
+#: Plausible vertebral body dimensions per region, as ``(width, depth, height)``
+#: ranges in millimetres. Deliberately wide: the point is to catch a mask that
+#: has merged a body with a rib head or a neighbouring vertebra, not to police
+#: normal variation, and the opened body carries a systematic few millimetres
+#: of extra depth from the pedicle bases. Measured against published
+#: morphometry on VerSe, heights agree within 1 to 2 mm at every level and
+#: widths within 2 mm below T4.
+BODY_DIMENSION_RANGES_MM = {
+    "cervical": ((10.0, 42.0), (10.0, 34.0), (8.0, 28.0)),
+    "thoracic": ((16.0, 56.0), (14.0, 50.0), (10.0, 36.0)),
+    "lumbar": ((26.0, 74.0), (20.0, 58.0), (15.0, 44.0)),
+    "sacral": ((25.0, 90.0), (20.0, 75.0), (15.0, 65.0)),
+}
+
+
+def implausible_dimensions(level: str, width_mm: float, depth_mm: float, height_mm: float) -> bool:
+    """Whether a measured body is the wrong size for the level it claims to be."""
+    from . import nomenclature as nom
+
+    ranges = BODY_DIMENSION_RANGES_MM.get(nom.region_of(level))
+    if ranges is None:
+        return False
+    return any(
+        not lo <= value <= hi
+        for value, (lo, hi) in zip((width_mm, depth_mm, height_mm), ranges, strict=True)
+    )
+
+
+def implausible_segments(
+    theta_deg: np.ndarray, phi_deg: np.ndarray, limit: float = MAX_SEGMENTAL_CHANGE_DEG
+) -> np.ndarray:
+    """Which vertebrae disagree with *both* neighbours by more than ``limit``.
+
+    A vertebra whose measured tilt jumps away from the levels above and below
+    it and back again has not been measured; something in its mask is not the
+    vertebral body. On VerSe this catches the cranial-most levels of two scans
+    where the segmentation had merged a body with a neighbouring structure,
+    producing a T1 apparently tilted 80 degrees.
+
+    Disagreeing with one neighbour is not enough: that is what a genuine
+    junction looks like. It takes both.
+    """
+    theta = np.asarray(theta_deg, dtype=float)
+    phi = np.asarray(phi_deg, dtype=float)
+    n = len(theta)
+    flagged = np.zeros(n, dtype=bool)
+    for i in range(n):
+        above, below = max(i - 1, 0), min(i + 1, n - 1)
+        if above == i or below == i:  # an end vertebra has only one neighbour
+            neighbours = [below if above == i else above]
+        else:
+            neighbours = [above, below]
+        jumps = [
+            max(abs(theta[i] - theta[j]), abs(phi[i] - phi[j])) for j in neighbours
+        ]
+        flagged[i] = all(jump > limit for jump in jumps)
+    return flagged
+
+
+def reopen_body(
+    volume: np.ndarray,
+    core: np.ndarray,
+    spacing_mm: tuple[float, float, float],
+    radius_mm: float,
+) -> np.ndarray:
+    """Grow the body core back to the body, staying inside the vertebra's mask.
+
+    Eroding then dilating by the same ball is a morphological opening, and the
+    opening of a vertebra is its body: the operation deletes every part too
+    slender to contain the ball and restores the rest exactly. Measuring the
+    opened body needs no correction factor, which is what makes it better than
+    inflating the core's extents by the erosion depth -- that inflation assumes
+    the body shrinks by the full radius on every side, and a rounded or
+    obliquely rasterised surface does not.
+
+    Two other things were tried on real data and do not work. Measuring the
+    core and adding back twice the radius over-read the cranial vertebrae by a
+    factor of two, putting a T1 at 53 mm wide against a true 26. Cutting the
+    full mask along the antero-posterior axis at the pedicle narrowing removes
+    the spinous process but leaves the transverse processes, which stick out
+    sideways at the same depth: widths of 71 to 90 mm against a true 30 to 50.
+    """
+    from scipy import ndimage
+
+    mask = np.asarray(volume, dtype=bool)
+    seed = np.asarray(core, dtype=bool)
+    if not seed.any():
+        return mask
+    distance = ndimage.distance_transform_edt(~seed, sampling=spacing_mm)
+    return (distance <= radius_mm) & mask
 
 
 def _local_spine_axes(centroids: list[np.ndarray]) -> list[np.ndarray]:
@@ -628,6 +736,13 @@ def model_from_segmentation(
     # Cranial first, which for this frame means decreasing Z.
     keep.sort(key=lambda label: -measured[label].centroid[2])
     angles = np.array([measured[label].angles_deg for label in keep])
+    flagged = implausible_segments(angles[:, 0], angles[:, 1])
+    for k, label in enumerate(keep):
+        geometry = measured[label]
+        if implausible_dimensions(
+            label_names[label], geometry.width_mm, geometry.depth_mm, geometry.height_mm
+        ):
+            flagged[k] = True
     return (
         SpineModel3D(
             labels=tuple(label_names[label] for label in keep),
@@ -643,6 +758,12 @@ def model_from_segmentation(
                 "dropped": {
                     label: measured[label] for label in measured if label not in set(keep)
                 },
+                # Vertebrae whose measured tilt is not anatomy. Flagged rather
+                # than removed: dropping them would leave a gap in the level
+                # sequence and hide that the segmentation is wrong there.
+                "implausible": tuple(
+                    label_names[label] for label, bad in zip(keep, flagged, strict=True) if bad
+                ),
             },
         ),
         measured,

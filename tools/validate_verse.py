@@ -44,6 +44,8 @@ from vertebra_xray_core import nomenclature as nom
 from vertebra_xray_core.datasets import verse
 from vertebra_xray_core.spine3d import Projection, reconstruct_from_biplanar
 
+NEWLINE = chr(10)
+
 PA = Projection(view="pa")
 LAT = Projection(view="lateral")
 
@@ -60,6 +62,7 @@ class Row:
     caudal: str = ""
     contiguous: bool = False
     has_anomaly: bool = False
+    flagged_levels: str = ""
 
     single_film_correct: bool | None = None
     single_film_offset: int | None = None
@@ -124,6 +127,7 @@ def evaluate(sample: verse.VerseSample, *, noise_mm: float, seed: int) -> Row:
         return row
 
     truth = tuple(model.labels)
+    row.flagged_levels = " ".join(model.meta.get("implausible", ()))
     row.max_abs_psi_deg = float(np.abs(model.psi_deg).max())
 
     frontal = model.project(PA).with_labels(None)
@@ -211,32 +215,16 @@ def summarise(rows: list[Row]) -> str:
     done = [r for r in rows if r.status == "ok"]
     skipped = [r for r in rows if r.status == "skipped"]
     failed = [r for r in rows if r.status == "failed"]
+    clean = [r for r in done if not r.flagged_levels]
     lines = [
         f"scans found              {len(rows)}",
         f"  usable                 {len(done)}",
+        f"    of which unflagged   {len(clean)}",
         f"  skipped (coverage)     {len(skipped)}",
         f"  failed                 {len(failed)}",
     ]
     if not done:
-        return "\n".join(lines)
-
-    normal = [r for r in done if not r.has_anomaly]
-    anomalous = [r for r in done if r.has_anomaly]
-
-    def rate(rows_, attribute):
-        values = [getattr(r, attribute) for r in rows_ if getattr(r, attribute) is not None]
-        return f"{sum(values)}/{len(values)}" if values else "n/a"
-
-    lines += [
-        "",
-        "labelling, spines with normal segmentation",
-        f"  single lateral film    {rate(normal, 'single_film_correct')}",
-        f"  biplanar two-pass      {rate(normal, 'biplanar_correct')}",
-        "",
-        f"labelling, spines with an enumeration anomaly ({len(anomalous)} scans)",
-        f"  single lateral film    {rate(anomalous, 'single_film_correct')}",
-        f"  flagged as unreliable  {rate(anomalous, 'single_film_flagged')}",
-    ]
+        return NEWLINE.join(lines)
 
     def stat(rows_, attribute):
         values = np.array(
@@ -244,22 +232,46 @@ def summarise(rows: list[Row]) -> str:
         )
         if not len(values):
             return "n/a"
-        return f"median {np.median(values):6.2f}  p90 {np.quantile(values, 0.9):6.2f}  max {values.max():6.2f}"
+        return (
+            f"median {np.median(values):6.2f}  p90 {np.quantile(values, 0.9):6.2f}  "
+            f"max {values.max():7.2f}"
+        )
 
     lines += [
         "",
-        "biplanar reconstruction, degrees of error in the endplate normal",
-        f"  axial rotation known   {stat(done, 'normal_error_deg')}",
-        f"  axial rotation assumed {stat(done, 'normal_error_zero_psi_deg')}",
+        "biplanar reconstruction, error in the endplate normal (deg)",
+        f"  axial rotation known, all scans      {stat(done, 'normal_error_deg')}",
+        f"  axial rotation known, unflagged      {stat(clean, 'normal_error_deg')}",
+        f"  axial rotation assumed zero          {stat(done, 'normal_error_zero_psi_deg')}",
+        f"  axial rotation assumed, unflagged    {stat(clean, 'normal_error_zero_psi_deg')}",
         "",
-        "three-dimensional Cobb",
-        f"  PMC minus coronal      {stat(done, 'pmc_minus_coronal_deg')}",
-        f"  PMC error vs CT truth  {stat(done, 'pmc_error_deg')}",
+        "three-dimensional Cobb (deg)",
+        f"  plane of maximum curvature minus coronal   {stat(done, 'pmc_minus_coronal_deg')}",
+        f"  same, unflagged scans                      {stat(clean, 'pmc_minus_coronal_deg')}",
+        f"  PMC recovered from two views vs CT truth   {stat(clean, 'pmc_error_deg')}",
         "",
-        f"axial rotation present   {stat(done, 'max_abs_psi_deg')}",
-        f"thoracolumbar anchor     {stat(done, 'anchor_reversal_deg')}",
+        f"axial rotation present in the data   {stat(done, 'max_abs_psi_deg')}",
+        f"thoracolumbar anchor strength        {stat(done, 'anchor_reversal_deg')}",
     ]
-    return "\n".join(lines)
+
+    offsets = [r.single_film_offset for r in done if r.single_film_offset is not None]
+    counted = {value: offsets.count(value) for value in sorted(set(offsets))}
+    exact = sum(1 for r in done if r.single_film_correct)
+    within = sum(1 for o in offsets if abs(o) <= 1)
+    shifted = sum(1 for o in offsets if o == -1)
+    lines += [
+        "",
+        "vertebral levels from one lateral film",
+        f"  exact                    {exact}/{len(done)}",
+        f"  within one level         {within}/{len(done)}",
+        f"  level offset histogram   {counted}",
+        f"  anchor one level caudal  {shifted}/{len(offsets)}  "
+        "(the supine thoracolumbar inflection sits at L1, not T12)",
+        "",
+        "vertebral levels from the biplanar two-pass route",
+        f"  exact                    {sum(1 for r in done if r.biplanar_correct)}/{len(done)}",
+    ]
+    return NEWLINE.join(lines)
 
 
 def main(argv: list[str] | None = None) -> int:
