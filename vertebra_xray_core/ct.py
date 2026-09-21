@@ -48,6 +48,7 @@ __all__ = [
     "vertebra_geometry",
     "vertebra_from_mask",
     "reopen_body",
+    "pedicles_from_mask",
     "model_from_segmentation",
     "implausible_segments",
     "implausible_dimensions",
@@ -79,6 +80,8 @@ class VertebraGeometry:
     voxels: int
     body_voxels: int
     touches_boundary: bool
+    pedicle_half_separation_mm: float = float("nan")
+    pedicle_posterior_offset_mm: float = float("nan")
 
     @property
     def angles_deg(self) -> tuple[float, float, float]:
@@ -511,16 +514,28 @@ def _measure(
         world = np.hstack([idx, np.ones((len(idx), 1))]) @ affine.T
         return ras_to_patient_frame(world[:, :3])
 
-    return vertebra_geometry(
+    body_points = to_patient(np.argwhere(body) + low)
+    geometry = vertebra_geometry(
         to_patient(core_indices),
         label,
         posterior_points=to_patient(rest_indices) if len(rest_indices) else None,
         cranial_hint=cranial_hint,
-        all_points=to_patient(np.argwhere(body) + low),
+        all_points=body_points,
         vertebra_voxels=len(indices),
         eroded_by_mm=eroded_by,
         touches_boundary=touches,
     )
+    found = pedicles_from_mask(to_patient(indices), body_points, geometry.rotation)
+    if found is not None:
+        right, left = found
+        from dataclasses import replace as _replace
+
+        geometry = _replace(
+            geometry,
+            pedicle_half_separation_mm=float(0.5 * (left[0] - right[0])),
+            pedicle_posterior_offset_mm=float(-0.5 * (left[1] + right[1])),
+        )
+    return geometry
 
 
 #: A segmental angle -- the change in tilt from one vertebra to the next --
@@ -618,6 +633,50 @@ def reopen_body(
         return mask
     distance = ndimage.distance_transform_edt(~seed, sampling=spacing_mm)
     return (distance <= radius_mm) & mask
+
+
+def pedicles_from_mask(
+    vertebra_points: np.ndarray,
+    body_points: np.ndarray,
+    rotation: np.ndarray,
+    *,
+    height_fraction: float = 0.65,
+    reach_mm: float = 28.0,
+    min_voxels: int = 40,
+) -> tuple[np.ndarray, np.ndarray] | None:
+    """The two pedicle centroids, in the vertebra's own frame, or ``None``.
+
+    Right pedicle first. The pedicles are what connects the body to the
+    posterior arch, so they are the part of ``vertebra_points`` that is not
+    body, lies immediately behind it, sits within the body's height, and comes
+    in two pieces either side of the midline. Selecting on those four
+    properties in the vertebra's own frame is enough; no component analysis is
+    needed, because the frame is already known by the time this runs.
+
+    Returns ``None`` when either side is too sparse to trust -- a mask that
+    stops at the body, or a level where the arch is missing.
+    """
+    points = np.asarray(vertebra_points, dtype=float)
+    body = np.asarray(body_points, dtype=float)
+    rotation = np.asarray(rotation, dtype=float)
+
+    local = (points - body.mean(axis=0)) @ rotation
+    body_local = (body - body.mean(axis=0)) @ rotation
+    back = body_local[:, 1].min()
+    half_height = height_fraction * 0.5 * (body_local[:, 2].max() - body_local[:, 2].min())
+
+    behind = (
+        (local[:, 1] < back + 2.0)
+        & (local[:, 1] > back - reach_mm)
+        & (np.abs(local[:, 2]) < half_height)
+    )
+    if behind.sum() < 2 * min_voxels:
+        return None
+    selected = local[behind]
+    right, left = selected[selected[:, 0] < 0.0], selected[selected[:, 0] > 0.0]
+    if len(right) < min_voxels or len(left) < min_voxels:
+        return None
+    return right.mean(axis=0), left.mean(axis=0)
 
 
 def _local_spine_axes(centroids: list[np.ndarray]) -> list[np.ndarray]:

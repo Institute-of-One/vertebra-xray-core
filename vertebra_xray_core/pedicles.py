@@ -1,0 +1,205 @@
+"""Pedicle landmarks, and what they add to a biplanar measurement.
+
+The problem they solve
+----------------------
+Four corner landmarks per vertebral body per view give two measurements --
+the frontal and lateral endplate tilts -- for three unknowns. Axial rotation
+is not among the things two such views can determine, so a three-dimensional
+angle computed from them carries whatever bias the unmeasured rotation
+imposes.
+
+Adding the two pedicles changes that. They sit lateral to the midline and
+*behind* the vertebral body, so axial rotation swings them across the body's
+projected width: this is the observation Nash and Moe graded by eye and
+Perdriolle measured with a torsionmeter. Two more landmarks on a view a
+detector is already processing make the system determined.
+
+What this module provides
+-------------------------
+A forward model for where the pedicles project, an inverse solve for all
+three angles at once, and -- the point of the exercise -- the machinery to ask
+how accurately a detector would have to place them.
+
+Pedicle geometry is described by two numbers in the vertebra's own frame: the
+half-separation ``a`` between the two pedicle centroids and their posterior
+offset ``b`` from the body centre. Both are needed, both vary by level, and
+the sensitivity of the recovered rotation to getting them wrong is part of
+the requirement rather than an afterthought.
+"""
+
+from __future__ import annotations
+
+from dataclasses import dataclass
+
+import numpy as np
+from scipy.optimize import least_squares
+
+from . import geometry as geo
+from .spine3d import orientation_matrix
+
+__all__ = [
+    "PedicleGeometry",
+    "project_pedicle_offsets",
+    "estimate_axial_rotation",
+    "solve_orientation_with_pedicles",
+    "NORMATIVE_PEDICLES",
+    "NORMATIVE_PEDICLES_BY_LEVEL",
+    "normative_pedicles",
+]
+
+
+@dataclass(frozen=True)
+class PedicleGeometry:
+    """Where a vertebra's pedicles sit, in its own frame, in millimetres.
+
+    ``half_separation``
+        Distance from the midline to each pedicle centroid, along the
+        vertebra's left-right axis.
+    ``posterior_offset``
+        How far behind the body centre they sit, along its antero-posterior
+        axis. This is the number that makes rotation visible: with the
+        pedicles level with the body centre the projected pair would be
+        symmetric at every rotation.
+    """
+
+    half_separation: float
+    posterior_offset: float
+
+    def as_body_frame(self) -> np.ndarray:
+        """``(2, 3)`` pedicle centroids, right then left, in the vertebra's frame."""
+        return np.array(
+            [
+                [-self.half_separation, -self.posterior_offset, 0.0],
+                [+self.half_separation, -self.posterior_offset, 0.0],
+            ]
+        )
+
+
+#: Pedicle geometry per level, for when it has not been measured on the
+#: patient. Medians over 400 vertebrae from 28 VerSe spines, measured by
+#: :func:`vertebra_xray_core.ct.pedicles_from_mask`.
+#:
+#: The posterior offset is the number that matters, because the rotation
+#: signal is the pedicle midpoint sliding by ``b sin(psi)``. It runs from
+#: 19 mm at T1 to 29 mm through the lumbar spine, so a degree of rotation
+#: moves the projected midpoint by 0.33 to 0.51 mm -- which is what sets the
+#: localisation a detector needs.
+NORMATIVE_PEDICLES_BY_LEVEL: dict[str, PedicleGeometry] = {
+    "T1": PedicleGeometry(16.7, 18.6),
+    "T2": PedicleGeometry(13.4, 21.0),
+    "T3": PedicleGeometry(13.6, 22.6),
+    "T4": PedicleGeometry(11.9, 24.0),
+    "T5": PedicleGeometry(13.0, 24.8),
+    "T6": PedicleGeometry(13.5, 25.7),
+    "T7": PedicleGeometry(13.3, 27.2),
+    "T8": PedicleGeometry(13.8, 27.9),
+    "T9": PedicleGeometry(14.4, 28.0),
+    "T10": PedicleGeometry(14.1, 27.5),
+    "T11": PedicleGeometry(12.5, 26.7),
+    "T12": PedicleGeometry(11.8, 27.6),
+    "L1": PedicleGeometry(13.1, 29.1),
+    "L2": PedicleGeometry(14.3, 29.5),
+    "L3": PedicleGeometry(16.2, 29.7),
+    "L4": PedicleGeometry(16.5, 29.3),
+    "L5": PedicleGeometry(19.6, 26.8),
+}
+
+#: Overall medians, for a level that is not in the table.
+NORMATIVE_PEDICLES = PedicleGeometry(half_separation=13.8, posterior_offset=27.2)
+
+
+def normative_pedicles(level: str | None = None) -> PedicleGeometry:
+    """Pedicle geometry for ``level``, falling back to the overall median."""
+    if level is None:
+        return NORMATIVE_PEDICLES
+    return NORMATIVE_PEDICLES_BY_LEVEL.get(level, NORMATIVE_PEDICLES)
+
+
+def project_pedicle_offsets(
+    theta: float,
+    phi: float,
+    psi: float,
+    pedicles: PedicleGeometry,
+) -> tuple[float, float]:
+    """Frontal-view positions of the two pedicles, relative to the body centre.
+
+    Returned in millimetres along the image's horizontal axis, right pedicle
+    first. Orthographic projection: for a frontal view the horizontal image
+    axis is the patient's left-right axis, so the offsets are the ``X``
+    components of the rotated pedicle positions.
+
+    Rotation shows up as the *midpoint* of the pair sliding away from the body
+    centre, by ``posterior_offset * sin(psi)`` to first order, while the
+    separation narrows as ``cos(psi)``. The midpoint is the stronger signal
+    and the one this module's inverse uses, because it is linear in the
+    rotation near zero where the separation is flat.
+    """
+    rotated = pedicles.as_body_frame() @ orientation_matrix(theta, phi, psi).T
+    return float(rotated[0, 0]), float(rotated[1, 0])
+
+
+def estimate_axial_rotation(
+    offsets: tuple[float, float],
+    pedicles: PedicleGeometry,
+    theta: float = 0.0,
+    phi: float = 0.0,
+) -> float:
+    """Axial rotation from the two projected pedicle offsets, in degrees.
+
+    Inverts the midpoint relation. ``theta`` and ``phi`` are used only to
+    account for the foreshortening the other two rotations impose on the
+    projected midpoint; passing zeros costs little at small tilts and is what
+    a first pass would do.
+    """
+    midpoint = 0.5 * (offsets[0] + offsets[1])
+
+    def residual(x: np.ndarray) -> np.ndarray:
+        pair = project_pedicle_offsets(theta, phi, float(x[0]), pedicles)
+        return np.array([0.5 * (pair[0] + pair[1]) - midpoint])
+
+    fit = least_squares(residual, np.array([0.0]), xtol=1e-12, ftol=1e-12)
+    return float(fit.x[0])
+
+
+def solve_orientation_with_pedicles(
+    alpha_deg: float,
+    beta_deg: float,
+    pedicle_offsets: tuple[float, float],
+    pedicles: PedicleGeometry,
+    *,
+    anterior_on_image_left: bool = True,
+    separation_weight: float = 0.3,
+) -> tuple[float, float, float]:
+    """Recover all three angles from two endplate tilts and two pedicle offsets.
+
+    This is the point of the module: with the pedicles the system is
+    determined, so nothing has to be assumed about axial rotation.
+
+    ``separation_weight`` scales the residual on the pedicle *separation*
+    relative to the one on their midpoint. The separation varies as
+    ``cos(psi)``, so it is flat near zero rotation and contributes little
+    there while still constraining large rotations; down-weighting it stops
+    its noise from dominating the well-conditioned midpoint term.
+    """
+    from .spine3d import _measured_tilts
+
+    lateral_sign = -1.0 if anterior_on_image_left else 1.0
+    target_mid = 0.5 * (pedicle_offsets[0] + pedicle_offsets[1])
+    target_sep = pedicle_offsets[1] - pedicle_offsets[0]
+
+    def residual(x: np.ndarray) -> np.ndarray:
+        theta, phi, psi = (float(v) for v in x)
+        a, b = _measured_tilts(theta, phi, psi, lateral_sign)
+        pair = project_pedicle_offsets(theta, phi, psi, pedicles)
+        return np.array(
+            [
+                float(geo.wrap_to_signed_right_angle(a - alpha_deg)),
+                float(geo.wrap_to_signed_right_angle(b - beta_deg)),
+                0.5 * (pair[0] + pair[1]) - target_mid,
+                separation_weight * ((pair[1] - pair[0]) - target_sep),
+            ]
+        )
+
+    guess = np.array([alpha_deg, -beta_deg, 0.0])
+    fit = least_squares(residual, guess, xtol=1e-12, ftol=1e-12, gtol=1e-12)
+    return float(fit.x[0]), float(fit.x[1]), float(fit.x[2])

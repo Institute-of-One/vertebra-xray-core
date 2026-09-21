@@ -1,54 +1,55 @@
-# A Cobb angle is a property of a spine and a projection: three-dimensional deformity measurement from biplanar radiographs, with the cost of ignoring axial rotation
+# Two more landmarks: making the three-dimensional Cobb angle identifiable from biplanar radiographs
 
-**Draft — IORN-014.** Numbers in this draft are produced by
-`tools/validate_verse.py` and `tools/make_figures.py`; every one of them is
-reproducible from the repository and the public VerSe release.
+**Draft, IORN-014.** Every number is produced by `tools/pedicle_requirement.py`,
+`tools/validate_verse.py` and `tools/make_figures.py`, and is reproducible from
+the repository and the public VerSe release.
 
 ---
 
 ## Abstract
 
-*(to be written last; structure below)*
+**Purpose.** A three-dimensional scoliosis angle can be computed from the
+endplate landmarks of a frontal and a lateral radiograph, and a published
+method does so. We show that this measurement is **not identifiable**: four
+corner landmarks per vertebral body per view give two constraints for three
+unknown rotations, so the result carries whatever bias the unmeasured axial
+rotation imposes. We then show that two further landmarks make it
+identifiable, and state how accurately a detector would have to place them.
 
-**Purpose.** A Cobb angle is measured on a coronal radiograph because that
-projection is easy to acquire, not because it is where the deformity lies.
-We quantify what the coronal projection omits, what a biplanar pair can and
-cannot recover, and what it costs to assume — as published biplanar pipelines
-do implicitly — that vertebrae are not axially rotated.
+**Methods.** The frontal view gives the tilt of the line joining an endplate's
+left and right edges, the lateral view the tilt of the line joining its
+anterior and posterior edges. Adding the two pedicle centroids, visible on the
+frontal view a landmark detector is already processing and the basis of the
+Nash-Moe and Perdriolle rotation gradings, supplies the missing constraint:
+axial rotation slides the projected pedicle midpoint by `b sin(psi)`, where
+`b` is their posterior offset from the body centre. Validated against
+closed-form phantoms and against 28 spines from the VerSe CT benchmark, which
+supplies real vertebral orientations including real axial rotation.
 
-**Methods.** A measurement layer that takes four corner landmarks per
-vertebral body from any source and reports coronal Cobb angles, the angle in
-the plane of maximum curvature, and an interval on each. Validated against
-closed-form phantoms and against 30 spines from the VerSe CT benchmark, which
-supplies the vertebral orientations — including axial rotation — that no pair
-of radiographs can.
+**Results.** Without the pedicles the recovered endplate normal is in error by
+a median of 5.50 deg (p90 12.99, max 22.84) over the anatomical range of
+orientations, growing linearly to 12.8 deg at 30 deg of axial rotation. With
+them the solution is exact. Under realistic detector error the residual is a
+median of 0.43 deg at 1 mm of pedicle localisation error, and the 90th
+percentile falls below 1 deg at about 0.9 mm. Patient-specific pedicle
+geometry is unnecessary: taking it from a normative table wrong by 2 mm leaves
+a median residual of 0.25 deg. That table, pedicle half-separation and
+posterior offset per level over 400 vertebrae, is reported.
 
-**Results.** On 28 spines passing an automated quality check, the biplanar
-inverse problem recovers every endplate normal exactly (median, 90th
-percentile and maximum error 0.00°) when axial rotation is supplied, and with
-a median error of 3.26° (p90 5.65°, max 9.30°) when it is assumed to be zero.
-Across 70 curves the angle in the plane of maximum curvature exceeded the
-coronal angle in **every one**, by a median of 7.2° (p90 22.8°, max 37.0°);
-the effect persists under 2 mm of injected landmark error. Cone-beam
-divergence cannot change a coronal Cobb angle at all when axial rotation is
-zero, and changes it by 4.5° at 20° of rotation. A lateral radiograph
-under-reads T1–T12 kyphosis by 8.0° on a 75° curve. Landmark error propagates
-at roughly 3° of Cobb angle per millimetre, and the choice of end vertebrae
-contributes none of the variance below 1.5 mm and half of it at 4 mm.
+**Conclusion.** The three-dimensional angle from a biplanar landmark pair is
+unidentifiable as usually computed, and the fix is two landmarks a detector
+can already produce, placed to about a millimetre. Secondary findings: the
+exact coupling between the measured lateral tilt and the true sagittal tilt,
+the fact that cone-beam divergence cannot perturb a coronal Cobb angle at zero
+axial rotation, and a per-patient interval on the Cobb angle.
 
-**Conclusion.** The coronal projection systematically under-reads spinal
-deformity, and the shortfall is set by the curve's sagittal component rather
-than its coronal size, so it is largest in the thoracolumbar and lumbar spine.
-Axial rotation is the one quantity two radiographs cannot supply and the one
-that most corrupts what they do supply; it should be measured rather than
-assumed. A Cobb angle reported without an interval is reported without its
-resolution, and the interval is computable per patient.
-
-**Stated limitation.** The cohort is a general and fracture CT collection, not
-a scoliosis one — median coronal Cobb 9.5°, one curve of 70 above 25° — so the
-*direction* and *mechanism* of the shortfall are established here on real
-anatomy but its *magnitude in scoliosis* is not. Landmark detection from
-radiographic pixels is outside the scope of this work by design.
+**Stated limitations.** Landmark detection from radiographic pixels is outside
+the scope of this work by design: landmarks are projected from the CT-derived
+model, and detector error is injected as a stated perturbation. The VerSe
+cohort is a general and fracture CT collection, not a scoliosis one, with a
+median coronal Cobb of 9.5 deg and one curve of 70 above 25 deg, so real
+rotations in it are modest (median 3.8 deg) and the phantom carries the
+scoliotic range.
 
 ---
 
@@ -56,25 +57,30 @@ radiographic pixels is outside the scope of this work by design.
 
 *Points to make, in order:*
 
-1. The Cobb angle is the measurement scoliosis is diagnosed, monitored,
-   braced and operated on. It is defined on a single coronal projection.
-2. Scoliosis is not a coronal deformity. It is a three-dimensional one, and
-   the plane in which it is largest is not the coronal plane. This is not new
-   (Stokes 1994; the SRS three-dimensional terminology), but the measurement
-   that clinical practice runs on has not moved.
-3. Biplanar systems (EOS and others) make a three-dimensional measurement
-   possible, and a substantial literature reconstructs spines from them. What
-   that literature does not state is what the reconstruction assumes and what
-   the assumption costs.
-4. The gap this paper fills: not a better detector, but a stated, auditable
-   measurement layer, and quantitative answers to three questions that are
-   normally left implicit — how much the coronal plane omits, what axial
-   rotation does to a biplanar reconstruction, and how much of a reported Cobb
-   angle is noise.
-5. Explicit non-goal: landmark detection from radiographic pixels. That field
-   is crowded and competitive. Keeping it outside makes a human annotation, a
-   published detector and a CT segmentation directly comparable, because they
-   are measured by identical code.
+1. The Cobb angle is what scoliosis is diagnosed, monitored, braced and
+   operated on, and it is defined on one coronal projection.
+2. That scoliosis is three-dimensional, and that the coronal projection
+   under-reads it, is long established: Stagnara's plane-of-maximum-curvature
+   projection, the SRS three-dimensional terminology (Stokes 1994), and recent
+   measurements of the plane of maximum curvature from CT and from
+   radiographs. **This paper does not claim that as a finding.**
+3. What is new is a question about *identifiability*. A recent method computes
+   a three-dimensional scoliosis angle from four measured endplate angles on a
+   standing frontal and lateral pair (n = 41; mean Cobb 54 deg against a mean
+   three-dimensional angle of 60 deg). That construction takes two
+   measurements and infers a quantity depending on three rotations. It is
+   silent on axial rotation, and silent on whether the measured lateral angle
+   is the sagittal tilt. We show it is neither, quantify the consequence, and
+   close the gap.
+4. The full biplanar reconstruction literature, EOS and the deformable-model
+   pipelines, does not have this problem: it fits a vertebra shape model to
+   both silhouettes and recovers axial rotation to about 1.4 to 1.9 deg RMS.
+   **The problem is specific to the landmark-only route**, which is exactly
+   what automatic Cobb detectors produce, and therefore exactly the route a
+   fully automatic three-dimensional measurement would take.
+5. The fix is not a new imaging modality but two more landmark points. The
+   contribution is the specification: how accurately they must be placed, and
+   whether their geometry has to be measured per patient.
 
 ---
 
@@ -124,6 +130,26 @@ a factor that grows with the deformity.
 Given `ψ` from any external source, `(θ, φ)` follows by a two-parameter
 solve. Over a grid of 2601 orientations spanning ±40° in each angle the
 solution is exact (maximum endplate-normal error < 10⁻⁶ °).
+
+### 2.3b Pedicles, and why they close the system
+
+Four corners per view give two constraints. The unknowns are three rotations,
+so the system is short by one and axial rotation is what is missing.
+
+The pedicles supply it. They sit lateral to the midline and, decisively,
+*behind* the vertebral body, so rotation about the body's own axis swings them
+across its projected width. Writing their positions in the vertebra's frame as
+`(+-a, -b, 0)`, the projected midpoint of the pair leaves the body centre by
+`b sin(psi)` while their separation narrows as `2a cos(psi)`. The midpoint is
+the better-conditioned of the two signals: its derivative at zero rotation is
+`b`, while the separation's is zero, so near the neutral position the
+separation carries almost no information. Both are used, the separation
+down-weighted.
+
+This is the same geometry Nash and Moe graded by eye and Perdriolle measured
+with a torsionmeter. The contribution here is not the observation but its use
+as the missing constraint in a joint solve for all three rotations, and the
+resulting specification on landmark accuracy.
 
 ### 2.4 The plane of maximum curvature
 
@@ -228,6 +254,58 @@ is not exact, and both fail at the cranial end of the field of view where the
 segmentation had merged a vertebral body with a neighbouring structure. The
 flag is computed from the segmentation alone, without reference to the
 reconstruction, so it is a usable pre-filter rather than a post-hoc exclusion.
+
+### 3.2b Two pedicle landmarks make the measurement identifiable
+
+Over orientations drawn uniformly across the anatomical range (coronal tilt
++-35 deg, sagittal +-30, axial rotation +-30) the endplate normal recovered
+from four corners alone is in error by:
+
+| | median | p90 | max |
+|---|---|---|---|
+| four corners per view only | **5.50** | **12.99** | **22.84** |
+| plus pedicles, exact | 0.00 | 0.00 | 0.00 |
+| plus pedicles, 0.5 mm error | 0.21 | 0.60 | 1.36 |
+| plus pedicles, 1.0 mm error | 0.43 | 1.15 | 3.03 |
+| plus pedicles, 2.0 mm error | 0.86 | 2.44 | 4.02 |
+
+All values in degrees. The bias without pedicles grows linearly with the
+rotation actually present, from zero to 12.8 deg at 30 deg. With them it is
+flat: the solution does not degrade as the deformity worsens, which is the
+property that matters, because axial rotation and coronal deformity grow
+together.
+
+**The requirement is about one millimetre.** The 90th-percentile residual
+crosses 1 deg at 0.9 mm of pedicle localisation error; the median crosses it
+at about 3 mm.
+
+**Patient-specific pedicle geometry is unnecessary.** Taking the
+half-separation and posterior offset from a normative table rather than
+measuring them costs a median of 0.13 deg when the table is wrong by 1 mm and
+0.25 deg at 2 mm. The interquartile spread actually observed across 400
+vertebrae is 12.3 to 15.4 mm in separation and 25.0 to 29.4 mm in posterior
+offset, so a table sits comfortably inside the regime where it does not
+matter.
+
+That table is a secondary deliverable. Medians over 400 vertebrae from 28
+spines, in millimetres:
+
+| level | T1 | T4 | T7 | T10 | T12 | L1 | L3 | L5 |
+|---|---|---|---|---|---|---|---|---|
+| half-separation | 16.7 | 11.9 | 13.3 | 14.1 | 11.8 | 13.1 | 16.2 | 19.6 |
+| posterior offset | 18.6 | 24.0 | 27.2 | 27.5 | 27.6 | 29.1 | 29.7 | 26.8 |
+
+The posterior offset carries the rotation signal, and it runs from 19 mm at T1
+to about 29 mm in the lumbar spine, so one degree of rotation moves the
+projected pedicle midpoint by 0.33 to 0.51 mm. That, and not the endplate
+geometry, is what sets the millimetre requirement.
+
+On VerSe, with real orientations and pedicle geometry measured from the
+segmentations (394 vertebrae; axial rotation median 3.8 deg, max 26.4), the
+same ordering holds: a median residual of 0.55 deg without pedicles against
+0.16 with them at 1 mm of localisation error and the normative table.
+
+*Figure 6.*
 
 ### 3.3 The coronal projection understates the deformity, in every curve measured
 
@@ -382,3 +460,83 @@ so no figure carries patient data or a dataset licence.
 VerSe is CC BY-SA (2.0 in the bundled licence file, 4.0 per the project
 README) and its terms require three citations: Löffler 2020, Liebl 2021,
 Sekuboyina 2021.
+
+---
+
+## 6. References to secure
+
+Verified during the literature check; full citations still to be assembled.
+
+**Establishes what this paper does not claim as new**
+
+1. Stokes IAF, for the SRS Working Group on 3-D Terminology of Spinal
+   Deformity. Three-dimensional terminology of spinal deformity. *Spine*
+   1994;19:236-248. PMID 8153835. Defines the vertebral body line and the
+   per-vertebra angulations this package's conventions follow.
+2. Stagnara P. The plane-of-maximum-curvature projection: rotating the plate
+   about the spine's long axis to view the curve where it is largest. Cited in
+   the PMC literature below; primary reference to be traced.
+3. Plane of maximum curvature from CT in AIS. PubMed 32693677 (2020).
+4. Estimation of the plane of maximum curvature by a computational method.
+   *Eur Spine J* 2020. PubMed 32767126.
+5. Comparison of two- and three-dimensional measurement of the Cobb angle.
+   *Int Orthop* 2016.
+
+**The method this paper analyses**
+
+6. The measurement of the three-dimensional scoliosis angle from standard
+   radiographs. *BMC Musculoskelet Disord* 2020;21. PMC7372870. n = 41
+   patients, 62 curves; mean Cobb 54 +- 17 deg against a mean 3-D angle of
+   60 +- 15. Computes the angle between endplate normals built from four
+   measured radiographic angles. **Does not discuss axial rotation, and does
+   not examine whether the measured lateral angle is the sagittal tilt.**
+
+**Why the problem is specific to the landmark-only route**
+
+7. Validation of the relative 3D orientation of vertebrae reconstructed by
+   biplanar radiography. PubMed 15147749. Orientation accuracy 1.5 deg except
+   axial rotation, 3.3 deg moderate and 4.4 deg severe.
+8. Comparison of 3-D spinal reconstruction accuracy: biplanar radiographs with
+   EOS versus CT. PubMed 22415001. RMS axial rotation 1.9 deg, maximum 5.8.
+9. Accuracy of vertebral rotation assessment using biplanar imaging in AIS.
+   *Spine Deformity*, recent.
+
+**Axial rotation grading this work builds on**
+
+10. Nash CL, Moe JH. A study of vertebral rotation. *J Bone Joint Surg Am*
+    1969;51:223-229.
+11. Perdriolle R, Vidal J. Morphology of scoliosis: three-dimensional
+    evolution. *Orthopedics* 1987.
+
+**Uncertainty, which this paper reports rather than discovers**
+
+12. Carman DL, Browne RH, Birch JG. Measurement of the Cobb angle on
+    radiographs of patients who have scoliosis: evaluation of intrinsic error.
+    *J Bone Joint Surg Am* 1990;72:328-333. PMID 2312527. Interobserver 95%
+    limit 7.2 deg with self-selected end vertebrae against 6.3 with them
+    pre-selected: the classical decomposition this package reproduces
+    computationally and per patient.
+13. Geometric foundations of measurement uncertainty and clinical relevance in
+    radiographic spinal angle assessment. PubMed 42443638. Establishes
+    CI95 ~ 111.4 R/L in landmark error R and vertebral size L.
+
+**Datasets**
+
+14. Loffler M, et al. A vertebral segmentation dataset with fracture grading.
+    *Radiol Artif Intell* 2020. doi:10.1148/ryai.2020190138
+15. Liebl H, et al. A CT vertebral segmentation dataset with anatomical
+    variations and multi-vendor scanner data. *Sci Data* 2021;8:284.
+16. Sekuboyina A, et al. VerSe: a vertebrae labelling and segmentation
+    benchmark for multi-detector CT images. *Med Image Anal* 2021;73:102166.
+    (14-16 are required by the VerSe terms of use.)
+17. AASCE 2019 challenge: accurate automated spinal curvature estimation.
+    *Med Image Anal* 2021. **The SpineWeb host of the training landmarks no
+    longer resolves; the images are frontal only.**
+
+**Context for the demoted labelling component**
+
+18. Roussouly P, et al. Classification of the normal variation in the sagittal
+    alignment of the human lumbar spine and pelvis. *Spine* 2005. Source of
+    the piecewise-circular-arc idealisation the phantoms use.
+19. Supine versus standing radiographic measurement in scoliosis: the sagittal
+    flattening that moves the thoracolumbar inflection. To be traced.

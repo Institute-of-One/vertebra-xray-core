@@ -28,9 +28,17 @@ from vertebra_xray_core import (  # noqa: E402
     uncertainty,
     viz,
 )
+from vertebra_xray_core.pedicles import (  # noqa: E402
+    PedicleGeometry,
+    normative_pedicles,
+    project_pedicle_offsets,
+    solve_orientation_with_pedicles,
+)
 from vertebra_xray_core.spine3d import (  # noqa: E402
     Projection,
+    _measured_tilts,
     axial_rotation_bias,
+    endplate_normal,
 )
 
 PA = Projection(view="pa")
@@ -229,6 +237,92 @@ def figure_uncertainty(out: Path) -> None:
     _save(fig, out / "fig4_uncertainty.png")
 
 
+def figure_pedicle_requirement(out: Path) -> None:
+    """What a detector must deliver for the three-dimensional angle to be unbiased."""
+    rng = np.random.default_rng(0)
+    pedicles = normative_pedicles("T8")
+    draws = 600
+
+    def sample():
+        return rng.uniform(-35, 35), rng.uniform(-30, 30), rng.uniform(-30, 30)
+
+    def residual(theta, phi, psi, truth, assumed, noise):
+        alpha, beta = _measured_tilts(theta, phi, psi, -1.0)
+        offsets = np.array(project_pedicle_offsets(theta, phi, psi, truth))
+        if noise:
+            offsets = offsets + rng.normal(0.0, noise, 2)
+        got = solve_orientation_with_pedicles(
+            alpha, beta, (float(offsets[0]), float(offsets[1])), assumed
+        )
+        return geo_angle(endplate_normal(got[0], got[1]), endplate_normal(theta, phi))
+
+    fig, axes = plt.subplots(1, 3, figsize=(12.5, 3.8))
+
+    rotations = np.arange(0.0, 31.0, 2.0)
+    without = [axial_rotation_bias(20.0, -15.0, float(r))["normal_error_deg"] for r in rotations]
+    axes[0].plot(rotations, without, lw=2.0, color="#b03030", label="four corners only")
+    for noise, style in ((0.5, "-"), (1.0, "--"), (2.0, ":")):
+        curve = []
+        for r in rotations:
+            values = [residual(20.0, -15.0, float(r), pedicles, pedicles, noise) for _ in range(60)]
+            curve.append(np.median(values))
+        axes[0].plot(rotations, curve, lw=1.6, ls=style, color="#2f6f4f",
+                     label=f"plus pedicles at {noise:.1f} mm")
+    axes[0].set_xlabel("axial rotation present (deg)")
+    axes[0].set_ylabel("endplate normal error (deg)")
+    axes[0].set_title("a  two more landmarks remove the bias")
+    axes[0].legend(fontsize=7.5, frameon=False)
+
+    errors = [0.0, 0.25, 0.5, 1.0, 1.5, 2.0, 3.0]
+    medians, p90s = [], []
+    for noise in errors:
+        values = [residual(*sample(), pedicles, pedicles, noise) for _ in range(draws)]
+        medians.append(np.median(values))
+        p90s.append(np.quantile(values, 0.9))
+    baseline = [axial_rotation_bias(*sample()[:2], sample()[2])["normal_error_deg"]
+                for _ in range(draws)]
+    axes[1].axhline(np.median(baseline), color="#b03030", lw=1.6, ls="--",
+                    label=f"no pedicles, median {np.median(baseline):.1f} deg")
+    axes[1].plot(errors, medians, marker="o", ms=4, lw=1.8, color="#2f6f4f", label="median")
+    axes[1].plot(errors, p90s, marker="s", ms=4, lw=1.4, ls="--", color="#2f6f4f", label="90th pct")
+    axes[1].axhline(1.0, color="#999999", lw=0.9, ls=":")
+    axes[1].set_xlabel("pedicle localisation error (mm)")
+    axes[1].set_ylabel("endplate normal error (deg)")
+    axes[1].set_title("b  the requirement: about 1 mm")
+    axes[1].legend(fontsize=7.5, frameon=False)
+
+    geometry_errors = [0.0, 1.0, 2.0, 3.0, 4.0, 6.0]
+    medians, p90s = [], []
+    for spread in geometry_errors:
+        values = []
+        for _ in range(draws):
+            truth = PedicleGeometry(
+                pedicles.half_separation + rng.normal(0.0, spread),
+                pedicles.posterior_offset + rng.normal(0.0, spread),
+            )
+            values.append(residual(*sample(), truth, pedicles, 0.0))
+        medians.append(np.median(values))
+        p90s.append(np.quantile(values, 0.9))
+    axes[2].plot(geometry_errors, medians, marker="o", ms=4, lw=1.8, color="#7a5b9a", label="median")
+    axes[2].plot(geometry_errors, p90s, marker="s", ms=4, lw=1.4, ls="--", color="#7a5b9a",
+                 label="90th pct")
+    axes[2].axvspan(0.0, 2.5, color="#cccccc", alpha=0.35)
+    axes[2].text(1.25, axes[2].get_ylim()[1] * 0.85, "observed spread", ha="center", fontsize=7)
+    axes[2].axhline(1.0, color="#999999", lw=0.9, ls=":")
+    axes[2].set_xlabel("error in the assumed pedicle geometry (mm)")
+    axes[2].set_ylabel("endplate normal error (deg)")
+    axes[2].set_title("c  a normative table is enough")
+    axes[2].legend(fontsize=7.5, frameon=False)
+
+    _save(fig, out / "fig6_pedicle_requirement.png")
+
+
+def geo_angle(u, v):
+    from vertebra_xray_core import geometry as geo
+
+    return geo.angle_between(u, v)
+
+
 def _save(fig, path: Path) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(path, bbox_inches="tight")
@@ -237,6 +331,7 @@ def _save(fig, path: Path) -> None:
 
 
 FIGURES = {
+    "pedicles": figure_pedicle_requirement,
     "overview": figure_overview,
     "axial": figure_axial_rotation,
     "kyphosis": figure_kyphosis,
