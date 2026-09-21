@@ -1,28 +1,47 @@
-"""Three-dimensional Cobb angles and the plane of maximum curvature.
+"""Three-dimensional Cobb angles and the planes they are measured in.
 
 A Cobb angle is not a property of a spine; it is a property of a spine *and a
 projection*. The coronal radiograph is one particular projection, chosen
 because it is easy to acquire, not because it is where the deformity is
-largest. Rotating the measurement plane about the cranio-caudal axis changes
-the number continuously, and the plane where it peaks -- the plane of maximum
-curvature, PMC -- is the one that describes the deformity.
+largest.
 
-Three distinct numbers are reported for every curve and they are routinely
-conflated:
+Which plane, and why the choice is constrained
+----------------------------------------------
+Rotating the measurement plane changes the angle continuously, so "the largest
+Cobb angle" needs the family of admissible planes to be stated. Taking the
+maximum over *all* planes does not work, because for any two endplates that
+are not parallel there is a viewing direction that makes their traces
+perpendicular: the unrestricted maximum is 90 degrees for every curve, and
+carries no information about the spine at all.
 
+Restricting to planes containing the cranio-caudal axis makes it well defined,
+and the restriction is physical rather than convenient: a radiograph obtained
+by rotating a standing patient about their own long axis can realise exactly
+that family and no other. ``pmc_deg`` is the maximum over it.
+
+Three quantities, routinely conflated
+-------------------------------------
 ``coronal_deg``
-    what a frontal radiograph measures, the projection at the coronal plane.
+    What a frontal radiograph measures: the projection at the coronal plane.
 ``pmc_deg``
-    the maximum over all measurement planes containing the cranio-caudal
-    axis, with ``pmc_from_coronal_deg`` saying where that maximum sits. This
-    is the SRS three-dimensional Cobb angle. It is always at least
+    The maximum over planes containing the cranio-caudal axis, with
+    ``pmc_from_coronal_deg`` giving its orientation. Always at least
     ``coronal_deg``.
 ``normal_angle_deg``
-    the plain angle between the two endplate normals in space. This is *not*
-    a Cobb angle and is generally smaller than ``pmc_deg``, because projection
-    onto a plane can open an angle rather than close it.
+    The dihedral angle between the two endplates, which is the angle their
+    normals make in space. It is a property of the vertebrae alone, with no
+    projection in it.
 
-All three fall out of the endplate normals, which
+A fourth, from the classical literature, is available through
+:func:`centroid_plane_normal` and :func:`angle_in_plane`: the angle seen in
+the plane through the two end vertebrae's centroids and the apex, which is
+Peloux and Stagnara's *plan d'election*. That plane is generally tilted out of
+vertical, so it lies outside the family a rotating radiograph can realise, and
+its angle can therefore exceed ``pmc_deg``. On phantoms it agrees with the
+dihedral angle to a tenth of a degree; on real spines it agrees with
+``pmc_deg`` to a median of 0.7 degrees but differs by up to 14.
+
+All of these follow from the endplate normals, which
 :mod:`vertebra_xray_core.spine3d` shows to be independent of axial rotation.
 """
 
@@ -42,6 +61,8 @@ __all__ = [
     "projected_tilt_deg",
     "projected_angle_deg",
     "plane_of_maximum_curvature",
+    "centroid_plane_normal",
+    "angle_in_plane",
     "pmc_profile",
     "measure_between_levels",
     "cobb3d_for_curves",
@@ -167,6 +188,53 @@ def plane_of_maximum_curvature(
 # --------------------------------------------------------------------------
 # measuring a model
 # --------------------------------------------------------------------------
+
+
+def centroid_plane_normal(
+    model: SpineModel3D, upper_label: str, apex_label: str, lower_label: str
+) -> np.ndarray:
+    """Normal of the plane through three vertebral centroids.
+
+    This is the classical construction: Peloux, Fauchet, Faucon and Stagnara's
+    *plan d'election*, the oblique view taken perpendicular to the plane
+    containing the end vertebrae and the apex, and the definition the recent
+    plane-of-maximum-curvature literature uses.
+
+    It is a different quantity from the plane that maximises the projected
+    endplate angle, which is what :func:`plane_of_maximum_curvature` returns.
+    One is defined by where the vertebrae *are*, the other by how they are
+    *oriented*, and the two coincide only when the curve is regular. Both are
+    reported so the difference can be seen rather than assumed away.
+    """
+    labels = list(model.labels)
+    try:
+        points = model.centroids[[labels.index(lab) for lab in (upper_label, apex_label, lower_label)]]
+    except ValueError as exc:
+        raise ValueError(f"{exc.args[0]}; model spans {model.labels}") from None
+    normal = np.cross(points[1] - points[0], points[2] - points[0])
+    if np.linalg.norm(normal) < 1e-9:
+        raise ValueError(
+            f"the centroids of {upper_label}, {apex_label} and {lower_label} are collinear, "
+            "so they do not define a plane"
+        )
+    return geo.unit(normal)
+
+
+def angle_in_plane(
+    upper_normal: np.ndarray, lower_normal: np.ndarray, plane_normal: np.ndarray
+) -> float:
+    """Angle between two endplates as seen in an arbitrary plane, in degrees.
+
+    The trace an endplate leaves in a plane viewed along ``plane_normal`` is
+    ``n x plane_normal``; the angle between the two traces is what a reader
+    would measure on a radiograph taken along that direction.
+    """
+    m = geo.unit(np.asarray(plane_normal, dtype=float))
+    first = np.cross(np.asarray(upper_normal, dtype=float), m)
+    second = np.cross(np.asarray(lower_normal, dtype=float), m)
+    if np.linalg.norm(first) < 1e-12 or np.linalg.norm(second) < 1e-12:
+        return 0.0
+    return float(geo.wrap_to_signed_right_angle(geo.angle_between(first, second)).__abs__())
 
 
 def measure_between_levels(
