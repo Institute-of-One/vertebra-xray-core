@@ -7,8 +7,10 @@ Conclusions. Text headings: Introduction, Materials and Methods, Results,
 Discussion, Acknowledgment, Disclosure, References.*
 
 *Every number below is produced by the scripts named in section 5 and is
-reproducible from the repository and the public VerSe release. Placeholders
-marked **[TBC]** need the author's input.*
+reproducible from the repository and the public VerSe release. Two items
+remain open and are marked **[TBC]**: which reporting checklist, if any, the
+journal expects for a study of this kind, and the open access statement, which
+is completed on acceptance.*
 
 ---
 
