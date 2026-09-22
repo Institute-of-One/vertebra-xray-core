@@ -19,8 +19,13 @@ angle measured from biplanar radiographs
 
 **Running title.** Identifiability of the biplanar three-dimensional Cobb angle
 
-**Authors.** **[TBC: author list, affiliations, ORCID, corresponding author,
-contributions]**
+**Authors.** **[TBC: name as it should appear in print, full affiliation with
+city and country, ORCID, and the corresponding author's postal address and
+e-mail. The submission system does not allow this to be changed afterwards.]**
+
+**Counts.** Main text approximately 3,100 words (excluding the title page,
+abstract, references, figure legends and tables); abstract 435 words; 7
+figures; 3 tables; 23 references.
 
 **Keywords.** scoliosis; Cobb angle; biplanar radiography; vertebral rotation;
 measurement uncertainty
@@ -53,17 +58,17 @@ rotation. Detector error was injected as isotropic Gaussian landmark noise.
 was in error by a median of 5.60° (90th percentile 12.82°, maximum 22.84°)
 across the anatomical range of orientations, increasing linearly to 12.8° at
 30° of axial rotation. With the pedicles the solution was exact. Under
-injected localisation error the residual was a median of 0.43° at 1 mm, with
-the 90th percentile crossing 1° at about 0.85 mm; at the 2–4 mm current detectors
-report, the median bias still fell four- to six-fold. Patient-specific pedicle
-geometry proved unnecessary: a normative table in error by 2 mm left a median
-residual of 0.27°, and that table is reported. Across 70 structural curves in
-26 VerSe spines the three-dimensional angle exceeded the coronal angle in
-every one, medians 19.3° against 9.5°, with three independent definitions of
-the three-dimensional angle agreeing to within 1.0°; the plane in which the
-deformity is largest lay a median of 53.6° from coronal. The cohort's largest
-coronal curve is 26.2°, so the direction and mechanism of the shortfall are
-established on real anatomy but its magnitude in scoliosis is not.
+injected localisation error the residual was a median of 0.43° at 1 mm, the
+90th percentile crossing 1° at about 0.85 mm; at the 2–4 mm detectors report,
+the median bias still fell four- to six-fold. A normative pedicle table in
+error by 2 mm left a median residual of 0.27°, so patient-specific geometry is
+unnecessary, and that table is reported. Across 70 curves in 26 VerSe spines
+the three-dimensional angle exceeded the coronal angle in every one, medians
+19.3° against 9.5°, three definitions agreeing within 1.0°, and the plane in
+which the deformity is largest lay a median of 53.6° from coronal. The largest
+coronal curve in that cohort is 26.2°, so the direction and mechanism of the
+shortfall are established on real anatomy but its magnitude in scoliosis is
+not.
 
 **Conclusions.** The three-dimensional Cobb angle computed from biplanar
 endplate landmarks is not identifiable as usually formulated. Two additional
@@ -77,29 +82,29 @@ most of the bias.
 ## 1. Introduction
 
 The Cobb angle is the measurement on which scoliosis is diagnosed, monitored, braced and operated,
-and it is defined on one coronal projection [Cobb 1948]. Spinal deformity is
+and it is defined on one coronal projection (1). Spinal deformity is
 not confined to that plane.
 
 That the coronal projection under-reads the deformity has been known since Péloux,
 Fauchet, Faucon and Stagnara proposed the *plan d'élection*, an oblique view
 taken perpendicular to the plane through the end vertebrae and the apex
-[Péloux 1965], and it is formalised in the Scoliosis Research Society's
-three-dimensional terminology [Stokes 1994]. Recent work measures the plane of
-maximum curvature from computed tomography [PMC-CT 2020] and estimates it
-computationally [Eur Spine J 2020]. **This paper claims none of that as new.**
+(2), and it is formalised in the Scoliosis Research Society's
+three-dimensional terminology (3). Recent work measures the plane of
+maximum curvature from computed tomography (4) and estimates it
+computationally (5). **This paper claims none of that as new.**
 
 A recent method computes a three-dimensional scoliosis angle from four endplate angles
 measured on a standing frontal and lateral pair, validated in 41 patients
 against computed tomography, and reports a mean Cobb angle of 54° against a
-mean three-dimensional angle of 60° [BMC 2020]. It is an appealing
+mean three-dimensional angle of 60° (6,7). It is an appealing
 construction because automatic landmark detectors produce exactly those inputs
-[AASCE 2021]. The construction infers a quantity that depends on three
+(8). The construction infers a quantity that depends on three
 rotations from two measurements. We ask whether it is identifiable, and if
 not, what closes it.
 
 Full biplanar reconstruction does not have this problem. EOS and the deformable-model
 pipelines fit a vertebra shape model to both silhouettes and recover axial
-rotation to about 1.4–1.9° RMS [Dumas 2004; Glaser 2012]. The gap is specific
+rotation to about 1.4–1.9° RMS (9,10). The gap is specific
 to measurement from a small set of endplate landmarks, which is the route a
 fully automatic three-dimensional Cobb angle would take.
 
@@ -161,8 +166,8 @@ vertebral body. Writing their centroids in the vertebra's frame as (±*a*,
 better-conditioned signal: its derivative at ψ = 0 is *b*, whereas the
 separation's is zero. Both were used, the separation down-weighted by 0.3.
 
-This is the geometry Nash and Moe graded visually [Nash 1969] and Perdriolle
-measured with a torsionmeter [Perdriolle 1987]. Its use here is as the missing
+This is the geometry Nash and Moe graded visually (11) and Perdriolle
+measured with a torsionmeter (12). Its use here is as the missing
 constraint in a joint solve for all three rotations.
 
 ### 2.4 Which plane the three-dimensional angle is measured in
@@ -187,7 +192,7 @@ a fourth.
 Spines with prescribed Cobb angles, kyphosis, lordosis and axial rotation in
 closed form, so that measured values can be compared with the values put in
 rather than with another measurement. End-vertebra tilts are chained rather
-than superposed, and tilt ramps are linear so curvature is piecewise constant.
+than superposed, and tilt ramps are linear so curvature is piecewise constant, after the piecewise-circular description of normal sagittal alignment (13).
 
 ### 2.6 A rendered phantom radiograph
 
@@ -198,7 +203,7 @@ and the abdomen; the volume is line-integrated along the beam to give the
 films in Figure 1.
 
 Anthropomorphic digital phantoms and digitally reconstructed radiographs are
-long established [Segars 2010], and nothing here is new as imaging physics:
+long established (14), and nothing here is new as imaging physics:
 scatter, beam hardening and trabecular texture are not modelled, and the
 attenuation values were chosen to order correctly rather than to match a
 measured spectrum. **No result in this paper is measured from it.** It is
@@ -209,7 +214,7 @@ third-party licence.
 
 ### 2.7 Real vertebral orientations from CT
 
-VerSe [Löffler 2020; Liebl 2021; Sekuboyina 2021] supplies hand-corrected
+VerSe (15,16,17) supplies hand-corrected
 vertebral labels and segmentation masks. Extracting orientation from a mask is
 not trivial and required three decisions, each invisible on a box phantom and
 decisive on real vertebrae:
@@ -229,7 +234,7 @@ decisive on real vertebrae:
    differ by under 20%. Planes were fitted to the opened body's superior and
    inferior surfaces instead.
 
-Measured body dimensions agreed with published morphometry: heights within
+Measured body dimensions agreed with published morphometry (18): heights within
 1–2 mm at every level, widths within 2 mm below T4. An automated check on
 dimensions and segmental angles flagged 2 of 30 scans, both at the cranial
 edge of the field of view, and those two were the only scans where the
@@ -291,7 +296,7 @@ Degrees of endplate-normal error. **Figure 2b.**
 The 90th-percentile residual is 0.57° at 0.5 mm and 1.18° at 1 mm, so it
 crosses 1° at about 0.85 mm. Published whole-spine
 landmark detectors report median localisation errors of 1.5–2.4 mm cervical,
-2.1–3.0 mm lumbosacral and 2.4–4.3 mm thoracic [Refs 20–22], so **a
+2.1–3.0 mm lumbosacral and 2.4–4.3 mm thoracic (19,20,21), so **a
 millimetre is a target rather than a current capability**. At 3 mm — the thoracic spine as
 reported today, and where the deformity usually is — the median bias still
 falls from 5.60° to 1.25°.
@@ -388,7 +393,7 @@ good as the level a reader happens to need.
 | endplate normal error, ψ assumed zero | 3.26 | 3.62 | 5.25 | 8.73 |
 | three-dimensional minus coronal | 8.52 | 6.20 | 5.65 | 6.90 |
 
-Degrees. The shortfall does not wash out. At about 1 mm the zero-rotation
+Degrees. The geometric basis of measurement uncertainty in radiographic spinal angles has been set out recently (22); here the shortfall does not wash out. At about 1 mm the zero-rotation
 assumption and the detector contribute equally; below that the assumption
 dominates, so for a well-localised study it is the assumption, not the
 detector, that limits the result.
@@ -412,7 +417,7 @@ at main thoracic curves of 0°, 25°, 50° and 75°. **Figure 6.**
 contributed none of the variance below 1.5 mm, 6% at 2 mm, a third at 3 mm and
 half at 4 mm. This is a lower bound on the discrete term: independent corner
 jitter is a poor model of how two readers come to disagree about which
-vertebra ends a curve [Carman 1990]. **Figure 7.**
+vertebra ends a curve (23). **Figure 7.**
 
 ---
 
@@ -493,17 +498,89 @@ paper was transcribed between aggregations.
 
 ---
 
+## Author Contributions
+
+**[TBC: assign each role. For a single author all seven fall to that author,
+and the section is still required.]**
+
+(I) Conception and design;
+(II) Administrative support;
+(III) Provision of study materials or patients;
+(IV) Collection and assembly of data;
+(V) Data analysis and interpretation;
+(VI) Manuscript writing: all authors;
+(VII) Final approval of manuscript: all authors.
+
+---
+
 ## Acknowledgment
 
-**[TBC]**
+*Funding:* **[TBC: state the funding, or "None." -- QIMS requires this line
+either way, and it belongs here rather than in the acknowledgment text.]**
 
-## Disclosure
+**[TBC: anyone who contributed but does not meet authorship criteria, or
+"None."]**
 
-**[TBC: the journal requires a statement of whether the manuscript has been
-published or submitted elsewhere, and of all authors' relationships with
-companies having a financial interest in the content. The absence of any
-interest must also be stated. Note the commercial graphical interface built on
-this core needs declaring.]**
+---
+
+## Footnote
+
+*Reporting Checklist:* **[TBC: none of the EQUATOR checklists covers a
+measurement-theory study of this kind. Confirm with the editorial office
+whether one is expected; if not, state that no reporting guideline applies.]**
+
+*Data Sharing Statement:* All data underlying this article are public. The CT
+orientations are derived from the VerSe 2019 training release, which is
+distributed by its authors under its own terms (15-17); it is not
+redistributed here. Every other quantity is generated by the phantoms in the
+accompanying repository. The analysis code, the phantoms and the scripts that
+produce every number and figure are available at **[TBC: repository URL]**,
+archived at **[TBC: Zenodo DOI]**.
+
+*Conflicts of Interest:* **[TBC: the author must declare the commercial
+graphical interface built on this measurement core, naming the company and the
+nature of the relationship. State it plainly; a disclosed commercial interest
+is not a defect, an undisclosed one is. Completed ICMJE uniform disclosure
+forms are required at submission.]**
+
+*Ethical Statement:* The authors are accountable for all aspects of the work in ensuring that questions related to the accuracy or integrity of any part of the work are appropriately investigated and resolved. This study analysed only computational
+phantoms and the publicly available, de-identified VerSe collection. No
+patients were recruited, no identifiable data were accessed and no new human
+or animal data were generated, so institutional review board approval and
+informed consent were not applicable. **[TBC: confirm this wording against the
+author's institutional policy, and raise the ethics route with the editorial
+office in the cover letter, since the submission checklist is worded for
+studies that did obtain approval and consent.]**
+
+*Open Access Statement:* **[TBC: completed on acceptance.]**
+
+---
+
+## References
+
+1. Cobb JR. Outline for the study of scoliosis. Instr Course Lect 1948;5:261-75.
+2. Péloux J, Fauchet R, Faucon B, Stagnara P. Le plan d'élection pour l'examen radiologique des cypho-scolioses. Rev Chir Orthop Reparatrice Appar Mot 1965;51:517-24.
+3. Stokes IAF; Scoliosis Research Society Working Group on 3-D Terminology of Spinal Deformity. Three-dimensional terminology of spinal deformity. Spine (Phila Pa 1976) 1994;19:236-48.
+4. Wu HD, Chu WC, He CQ, Wong MS. Assessment of the plane of maximum curvature for patients with adolescent idiopathic scoliosis via computed tomography. Prosthet Orthot Int 2020;44:298-304.
+5. Wu HD, He C, Chu WC, Wong MS. Estimation of plane of maximum curvature for the patients with adolescent idiopathic scoliosis via a purpose-design computational method. Eur Spine J 2021;30:668-75.
+6. Główka P, Politarczyk W, Janusz P, Woźniak Ł, Kotwicki T. The method for measurement of the three-dimensional scoliosis angle from standard radiographs. BMC Musculoskelet Disord 2020;21:475.
+7. Lechner R, Putzer D, Dammerer D, Liebensteiner M, Bach C, Thaler M. Comparison of two- and three-dimensional measurement of the Cobb angle in scoliosis. Int Orthop 2017;41:957-62.
+8. Wang L, Xie C, Lin Y, Zhou HY, Chen K, Cheng D, et al. Evaluation and comparison of accurate automated spinal curvature estimation algorithms with spinal anterior-posterior X-ray images: the AASCE2019 challenge. Med Image Anal 2021;72:102115.
+9. Dumas R, Le Bras A, Champain N, Savidan M, Mitton D, Kalifa G, Steib JP, de Guise JA, Skalli W. Validation of the relative 3D orientation of vertebrae reconstructed by bi-planar radiography. Med Eng Phys 2004;26:415-22.
+10. Glaser DA, Doan J, Newton PO. Comparison of 3-dimensional spinal reconstruction accuracy: biplanar radiographs with EOS versus computed tomography. Spine (Phila Pa 1976) 2012;37:1391-7.
+11. Nash CL Jr, Moe JH. A study of vertebral rotation. J Bone Joint Surg Am 1969;51:223-9.
+12. Perdriolle R, Vidal J. Morphology of scoliosis: three-dimensional evolution. Orthopedics 1987;10:909-15.
+13. Roussouly P, Gollogly S, Berthonnaud E, Dimnet J. Classification of the normal variation in the sagittal alignment of the human lumbar spine and pelvis in the standing position. Spine (Phila Pa 1976) 2005;30:346-53.
+14. Segars WP, Sturgeon G, Mendonca S, Grimes J, Tsui BM. 4D XCAT phantom for multimodality imaging research. Med Phys 2010;37:4902-15.
+15. Löffler MT, Sekuboyina A, Jacob A, Grau AL, Scharr A, El Husseini M, Kallweit M, Zimmer C, Baum T, Kirschke JS. A vertebral segmentation dataset with fracture grading. Radiol Artif Intell 2020;2:e190138.
+16. Liebl H, Schinz D, Sekuboyina A, Malagutti L, Löffler MT, Bayat A, El Husseini M, Tetteh G, Grau K, Niederreiter E, Baum T, Wiestler B, Menze B, Braren R, Zimmer C, Kirschke JS. A computed tomography vertebral segmentation dataset with anatomical variations and multi-vendor scanner data. Sci Data 2021;8:284.
+17. Sekuboyina A, Husseini ME, Bayat A, Löffler M, Liebl H, Li H, et al. VerSe: a vertebrae labelling and segmentation benchmark for multi-detector CT images. Med Image Anal 2021;73:102166.
+18. Busscher I, Ploegmakers JJ, Verkerke GJ, Veldhuizen AG. Comparative anatomical dimensions of the complete human and porcine spine. Eur Spine J 2010;19:1104-14.
+19. Noh SH, Lee G, Bae HJ, Han JY, Son SJ, Kim D, Park JY, Choi SK, Cho PG, Kim SH, Yuh WT, Lee SH, Park B, Kim KR, Kim KT, Ha Y. Deep learning method for precise landmark identification and structural assessment of whole-spine radiographs. Bioengineering (Basel) 2024;11:481.
+20. Yeh YC, Weng CH, Huang YJ, Fu CJ, Tsai TT, Yeh CY. Deep learning approach for automatic landmark detection and alignment analysis in whole-spine lateral radiographs. Sci Rep 2021;11:7618.
+21. Cina A, Bassani T, Panico M, Luca A, Masharawi Y, Brayda-Bruno M, Galbusera F. 2-step deep learning model for landmarks localization in spine radiographs. Sci Rep 2021;11:9482.
+22. Chayer M, Phan P, Arnoux PJ, Aubin CÉ. Geometric foundations of measurement uncertainty and clinical relevance in radiographic spinal angle assessment. Spine Deform 2026. doi: 10.1007/s43390-026-01500-0.
+23. Carman DL, Browne RH, Birch JG. Measurement of scoliosis and kyphosis radiographs. Intraobserver and interobserver variation. J Bone Joint Surg Am 1990;72:328-33.
 
 ---
 
@@ -546,73 +623,11 @@ images. Every other figure is rendered from the phantom of sections 2.5 and
 2.6 and carries no patient data and no third-party licence, so a reader can
 regenerate them from the repository alone.
 
+---
+
 ## Tables
 
 1. Endplate-normal error with and without pedicles, over the anatomical range.
 2. Normative pedicle geometry per level, from 394 vertebrae.
 3. The four angle definitions compared on 70 real curves.
 
----
-
-## References
-
-*Numbering to be finalised on submission; each entry below was checked against
-its source during preparation.*
-
-1. Cobb JR. Outline for the study of scoliosis. Instr Course Lect
-   1948;5:261-75.
-2. Péloux J, Fauchet R, Faucon B, Stagnara P. Le plan d'élection pour l'examen
-   radiologique des cypho-scolioses. Rev Chir Orthop Reparatrice Appar Mot
-   1965;51:517-24.
-3. Stokes IAF; Scoliosis Research Society Working Group on 3-D Terminology of
-   Spinal Deformity. Three-dimensional terminology of spinal deformity. Spine
-   1994;19:236-48.
-4. Assessment of the plane of maximum curvature for patients with adolescent
-   idiopathic scoliosis via computed tomography. 2020. PMID 32693677.
-5. Estimation of the plane of maximum curvature for patients with adolescent
-   idiopathic scoliosis via a purpose-designed computational method. Eur Spine
-   J 2020. PMID 32767126.
-6. Comparison of two- and three-dimensional measurement of the Cobb angle in
-   scoliosis. Int Orthop 2016.
-7. The method for measurement of the three-dimensional scoliosis angle from
-   standard radiographs. BMC Musculoskelet Disord 2020;21. PMC7372870.
-8. Evaluation and comparison of accurate automated spinal curvature estimation
-   algorithms with spinal anterior-posterior X-ray images: the AASCE2019
-   challenge. Med Image Anal 2021.
-9. Dumas R, et al. Validation of the relative 3D orientation of vertebrae
-   reconstructed by bi-planar radiography. Med Eng Phys 2004. PMID 15147749.
-10. Glaser DA, et al. Comparison of 3-dimensional spinal reconstruction
-    accuracy: biplanar radiographs with EOS versus computed tomography. Spine
-    2012. PMID 22415001.
-11. Nash CL Jr, Moe JH. A study of vertebral rotation. J Bone Joint Surg Am
-    1969;51:223-9.
-12. Perdriolle R, Vidal J. Morphology of scoliosis: three-dimensional
-    evolution. Orthopedics 1987;10:909-15.
-13. Carman DL, Browne RH, Birch JG. Measurement of the Cobb angle on
-    radiographs of patients who have scoliosis: evaluation of intrinsic error.
-    J Bone Joint Surg Am 1990;72:328-33.
-14. Geometric foundations of measurement uncertainty and clinical relevance in
-    radiographic spinal angle assessment. PMID 42443638.
-15. Löffler MT, et al. A vertebral segmentation dataset with fracture grading.
-    Radiol Artif Intell 2020;2:e190138.
-16. Liebl H, et al. A computed tomography vertebral segmentation dataset with
-    anatomical variations and multi-vendor scanner data. Sci Data
-    2021;8:284.
-17. Sekuboyina A, et al. VerSe: a vertebrae labelling and segmentation
-    benchmark for multi-detector CT images. Med Image Anal 2021;73:102166.
-    *(15-17 are required by the VerSe terms of use.)*
-18. Deep learning method for precise landmark identification and structural
-    assessment of whole-spine radiographs. PMC11117576.
-19. Deep learning approach for automatic landmark detection and alignment
-    analysis in whole-spine lateral radiographs. Sci Rep 2021;11. PMC8027006.
-20. Two-step deep learning model for landmark localisation in spine
-    radiographs. Sci Rep 2021. PMC8096829.
-21. Busscher I, et al. Comparative anatomical dimensions of the complete human
-    and porcine spine. Eur Spine J 2010. *(morphometric comparison in section
-    2.7; to be confirmed as the intended source.)*
-22. Segars WP, Sturgeon G, Mendonca S, Grimes J, Tsui BMW. 4D XCAT phantom
-    for multimodality imaging research. Med Phys 2010;37:4902-15. *(prior art
-    for anthropomorphic digital phantoms and DRR rendering.)*
-23. Roussouly P, et al. Classification of the normal variation in the sagittal
-    alignment of the human lumbar spine and pelvis in the standing position.
-    Spine 2005;30:346-53. *(basis for the piecewise-circular-arc phantom.)*
