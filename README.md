@@ -183,7 +183,17 @@ can supply it -- and VerSe is deliberately enriched with transitional
 vertebrae and enumeration anomalies, which are exactly the spines a level
 count cannot get right. `vertebra_xray_core.ct` measures each vertebra from a
 segmentation mask and `tools/validate_verse.py` runs the pipeline over a
-release.
+release. `tools/pedicle_requirement.py` sweeps the landmark accuracy a
+detector would have to reach, `tools/normative_pedicles.py` rebuilds the
+normative pedicle table from the release and reports its difference from the
+one shipped in `pedicles.py`, and `tools/coronal_shortfall.py` compares the
+coronal angle with three three-dimensional definitions, stratified by the size
+of the coronal curve.
+
+Every number in the paper is printed by one of those five scripts. None was
+transcribed between them, and each table states the population it is
+aggregated over, because they differ: some pool curves, some pool vertebrae,
+and one takes the worst vertebra in each spine.
 
 Landmark detection from radiographic pixels is **not** under test anywhere:
 this package is the measurement layer, and detector error is handled
@@ -203,11 +213,30 @@ for at most one qualitative panel.
 ## Status
 
 Alpha. The measurement core, the labelling, the three-dimensional
-reconstruction, the CT path, the phantoms, the uncertainty model, the figures
-and the VerSe adapter are implemented and tested. Still to come: DICOM ingest
-for long-film studies, corner extraction from TotalSegmentator output, and the
-manuscript itself.
+reconstruction, the CT path, the phantoms, the radiograph renderer, the
+uncertainty model, the figures and the VerSe adapter are implemented and
+tested. The manuscript is in `paper/qims_manuscript.md`. Still to come: DICOM
+ingest for long-film studies, and corner extraction from TotalSegmentator
+output.
+
+The training-free level assignment is implemented and tested but is
+**deliberately held back from the paper**: it is correct on standing phantom
+geometry and correct in only 4 of 30 supine VerSe scans, because supine
+positioning flattens the lumbar lordosis and moves the sagittal inflection
+from T12 to L1. That posture dependence deserves its own report.
+
+## Citing this work
+
+See `CITATION.cff`. The accompanying paper is Institute of One research note
+**IORN-014**; its DOI will be added here on acceptance, and the software
+archive's DOI on the first tagged release.
 
 ## Licence
 
 MIT. See `LICENSE`.
+
+The figures carry no patient data and no third-party licence: every one except
+Figure 3 is rendered from a phantom, and Figure 3 plots measurements computed
+from the public VerSe release rather than any image from it. VerSe itself is
+ShareAlike-licensed and is not redistributed here; using it requires the three
+citations its terms specify, listed in `datasets/verse.py`.

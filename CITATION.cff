@@ -1,0 +1,39 @@
+cff-version: 1.2.0
+message: >-
+  If you use this software or the measurements it produces, please cite both
+  the software archive and the paper it accompanies.
+title: >-
+  vertebra-xray-core: identifiable three-dimensional Cobb angles from
+  biplanar spine radiographs
+abstract: >-
+  A measurement core for spinal deformity. Four endplate corners per view
+  constrain only two of the three rotations that define a vertebra's
+  orientation, so a three-dimensional Cobb angle computed from biplanar
+  endplate landmarks alone is not identifiable. Adding the two pedicle
+  centroids, already visible on the frontal view, closes the system exactly.
+  The package implements the measurement layer, a normative pedicle table, a
+  training-free level assignment, per-case uncertainty, a CT path for ground
+  truth, and licence-free phantoms with closed-form angles.
+type: software
+license: MIT
+version: 0.1.0
+# TODO before the release is archived: replace with the real authors,
+# affiliations and ORCIDs. Zenodo takes its creator list from this file.
+authors:
+  - name: "Institute of One, LISIT Co., Ltd."
+    website: "https://lisit.co.jp"
+repository-code: "https://github.com/Institute-of-One/vertebra-xray-core"
+keywords:
+  - scoliosis
+  - Cobb angle
+  - spinal deformity
+  - biplanar radiography
+  - vertebral labelling
+  - identifiability
+  - IORN-014
+identifiers:
+  - type: other
+    value: IORN-014
+    description: Institute of One research note number for the accompanying paper.
+# TODO: add the Zenodo DOI here once the first release is archived, and the
+# paper's DOI under preferred-citation, once accepted.

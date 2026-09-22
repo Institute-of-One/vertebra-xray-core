@@ -37,9 +37,6 @@ dev = [
   "pytest>=7.4", "pytest-cov>=4.1", "ruff>=0.4", "matplotlib>=3.7",
 ]
 
-[project.scripts]
-vertebra = "vertebra_xray_core.cli:main"
-
 [project.urls]
 Homepage = "https://github.com/Institute-of-One/vertebra-xray-core"
 Issues = "https://github.com/Institute-of-One/vertebra-xray-core/issues"
