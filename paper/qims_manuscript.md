@@ -1,4 +1,4 @@
-# Two more landmarks: identifiability of the three-dimensional Cobb angle measured from biplanar radiographs
+# Two pedicle landmarks make the three-dimensional Cobb angle identifiable from biplanar radiographs
 
 *Prepared for Quantitative Imaging in Medicine and Surgery, Original Article.
 Word limit 5,000 including abstract, excluding references, tables and figures.
@@ -16,8 +16,8 @@ is completed on acceptance.*
 
 ## Title page
 
-**Title.** Two more landmarks: identifiability of the three-dimensional Cobb
-angle measured from biplanar radiographs
+**Title.** Two pedicle landmarks make the three-dimensional Cobb angle
+identifiable from biplanar radiographs
 
 **Running title.** Identifiability of the biplanar three-dimensional Cobb angle
 

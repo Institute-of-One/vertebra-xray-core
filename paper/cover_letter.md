@@ -7,9 +7,9 @@ To the Editor-in-Chief
 
 Dear Editor,
 
-I submit for your consideration an Original Article entitled **"Two more
-landmarks: identifiability of the three-dimensional Cobb angle measured from
-biplanar radiographs"**.
+I submit for your consideration an Original Article entitled **"Two pedicle
+landmarks make the three-dimensional Cobb angle identifiable from biplanar
+radiographs"**.
 
 **What the paper reports.** A three-dimensional Cobb angle computed from the
 endplate landmarks of a frontal and a lateral radiograph is an attractive

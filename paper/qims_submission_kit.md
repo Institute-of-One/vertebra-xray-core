@@ -64,8 +64,8 @@ anywhere.
 **Article type:** Original Article.
 
 **Title:**
-> Two more landmarks: identifiability of the three-dimensional Cobb angle
-> measured from biplanar radiographs
+> Two pedicle landmarks make the three-dimensional Cobb angle identifiable
+> from biplanar radiographs
 
 **Running title** (60 characters, at the limit — do not lengthen it):
 > Identifiability of the biplanar three-dimensional Cobb angle

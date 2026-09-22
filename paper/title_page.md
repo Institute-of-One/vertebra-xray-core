@@ -1,4 +1,4 @@
-**Title:** Two more landmarks: identifiability of the three-dimensional Cobb angle measured from biplanar radiographs
+**Title:** Two pedicle landmarks make the three-dimensional Cobb angle identifiable from biplanar radiographs
 
 **Running title:** Identifiability of the biplanar three-dimensional Cobb angle
 
