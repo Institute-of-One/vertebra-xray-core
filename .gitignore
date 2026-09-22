@@ -22,3 +22,6 @@ results/
 
 # Generated artefacts
 outputs/
+
+# Generated paste-ready form fields; regenerate with paper/form_fields.py
+paper/form_fields.txt
