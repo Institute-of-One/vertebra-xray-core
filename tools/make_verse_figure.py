@@ -135,7 +135,11 @@ def figure(curves, scans, out: Path) -> None:
     plt.close(fig)
     print(f"wrote {out}")
 
-    print(f"\ncurves {len(curves)} from {len(scans)} spines")
+    carrying = len({c["subject"] for c in curves})
+    print(
+        f"\ncurves {len(curves)} from {carrying} of {len(scans)} usable spines "
+        f"({len(scans) - carrying} carry no structural curve)"
+    )
     print(
         f"PMC minus coronal: median {np.median(gap):.2f}, "
         f"p90 {np.quantile(gap, 0.9):.2f}, max {gap.max():.2f}"
