@@ -63,9 +63,12 @@ def main() -> int:
     funding = re.search(r"\*Funding:\* (.+?)\n\n", manuscript, re.DOTALL).group(1)
     funding = unwrap(plain(funding))
 
-    body = letter[letter.index("Dear Editor,") :]
-    body = body[: body.index("Yours sincerely,")]
-    body = unwrap(plain(body))
+    # Down to the signature, then the signature itself with its line breaks
+    # kept: a cover letter an editor reads should be signed, and the address
+    # block reads as an address rather than a run-on line.
+    letter_body = letter[letter.index("Dear Editor,") :]
+    prose, _, signature = letter_body.partition("Yours sincerely,")
+    body = unwrap(plain(prose)) + "\n\nYours sincerely,\n\n" + plain(signature).strip()
 
     field("ARTICLE TYPE", "Original Article", "already selected")
     field("TITLE", title, f"{len(title)} characters")
