@@ -85,6 +85,21 @@ manuscript. Every result was produced by executable code in the released
 repository and was re-run and verified by me. The AI system is not an author
 and does not meet authorship criteria. This is stated in the manuscript.
 
+**Prior posting, disclosed in full.** The manuscript has not been published
+or submitted anywhere, and is not under consideration by another journal.
+However, this work is released as open-source software, and the programme's
+practice is to version the manuscript alongside the code so that the text and
+the numbers it reports cannot drift apart. The consequence is that the
+manuscript source is visible in the public repository, and a copy is inside
+the release archived at Zenodo. It has not been posted to any preprint server
+and carries no preprint DOI; the Zenodo DOI is a software archive.
+
+I could not find a preprint or repository policy in the guidelines for
+authors, so I would rather raise it than let it be discovered. **If the
+journal would prefer the manuscript withdrawn from the live repository, I will
+remove it on request.** The archived release cannot be withdrawn, since a DOI
+has been minted against it, but the repository can carry the code alone.
+
 **Declarations.** The manuscript has not been published previously and is not
 under consideration by any other journal. I am the sole author, I have read
 and approved the manuscript, and I accept the journal's Article Processing

@@ -29,6 +29,20 @@ approval exists — VerSe holds it, under Proposal 27/19 S-SR.
 
 ---
 
+## 0b. The other thing the checklist asks that needs a word
+
+Item 1 asks you to confirm the submission has not been previously published,
+and to explain in the cover letter otherwise. It has not been published or
+submitted anywhere. But the manuscript source is versioned alongside the code,
+so it is visible in the public repository and a copy sits inside the archived
+release. The guidelines state no preprint or repository policy.
+
+The cover letter discloses this and offers to remove the manuscript from the
+live repository if the journal prefers. Tick item 1 and let the letter carry
+the explanation, which is what the item itself directs.
+
+---
+
 ## 1. Files to upload
 
 | Purpose | File |
