@@ -47,7 +47,9 @@ def main() -> int:
     remaining = []
     for stem in TARGETS:
         text = (HERE / f"{stem}.md").read_text(encoding="utf-8")
-        remaining += [f"{stem}.md:{i}" for i, line in enumerate(text.splitlines(), 1) if "TBC" in line]
+        remaining += [
+            f"{stem}.md:{i}" for i, line in enumerate(text.splitlines(), 1) if "TBC" in line
+        ]
     if remaining:
         print("\nPlaceholders still in the source, and therefore in the .docx:")
         for where in remaining:
