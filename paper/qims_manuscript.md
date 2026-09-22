@@ -45,22 +45,25 @@ centroids, visible on the frontal view and the basis of the Nash-Moe and
 Perdriolle gradings, as a third constraint: axial rotation displaces their
 projected midpoint by *b* sin(ψ), where *b* is their posterior offset from the
 vertebral body centre. All quantities were validated against phantoms with
-closed-form angles and against 28 spines (400 vertebrae) from the VerSe CT
+closed-form angles and against 28 spines (394 vertebrae) from the VerSe CT
 benchmark, which supplies real vertebral orientations including real axial
 rotation. Detector error was injected as isotropic Gaussian landmark noise.
 
 **Results.** Using four corners per view alone, the recovered endplate normal
-was in error by a median of 5.50° (90th percentile 12.99°, maximum 22.84°)
+was in error by a median of 5.60° (90th percentile 12.82°, maximum 22.84°)
 across the anatomical range of orientations, increasing linearly to 12.8° at
 30° of axial rotation. With the pedicles the solution was exact. Under
 injected localisation error the residual was a median of 0.43° at 1 mm, with
-the 90th percentile crossing 1° at 0.9 mm; at the 2–4 mm current detectors
+the 90th percentile crossing 1° at about 0.85 mm; at the 2–4 mm current detectors
 report, the median bias still fell four- to six-fold. Patient-specific pedicle
 geometry proved unnecessary: a normative table in error by 2 mm left a median
-residual of 0.25°, and that table is reported. On the 28 VerSe spines the
-three-dimensional angle exceeded the coronal angle in all 70 curves measured,
-medians 21.1° against 10.0°, and three independent definitions of the
-three-dimensional angle agreed to within 1.4° at the median.
+residual of 0.27°, and that table is reported. Across 70 structural curves in
+26 VerSe spines the three-dimensional angle exceeded the coronal angle in
+every one, medians 19.3° against 9.5°, with three independent definitions of
+the three-dimensional angle agreeing to within 1.0°; the plane in which the
+deformity is largest lay a median of 53.6° from coronal. The cohort's largest
+coronal curve is 26.2°, so the direction and mechanism of the shortfall are
+established on real anatomy but its magnitude in scoliosis is not.
 
 **Conclusions.** The three-dimensional Cobb angle computed from biplanar
 endplate landmarks is not identifiable as usually formulated. Two additional
@@ -107,7 +110,7 @@ This paper contributes the following.
    orientations.
 2. Two pedicle landmarks are shown to close the system exactly, and the
    localisation accuracy required is stated.
-3. A normative table of pedicle geometry from 400 vertebrae is reported,
+3. A normative table of pedicle geometry from 394 vertebrae is reported,
    together with the demonstration that patient-specific geometry is not
    needed.
 4. Secondary: the exact coupling between the measured lateral tilt and the
@@ -186,7 +189,25 @@ closed form, so that measured values can be compared with the values put in
 rather than with another measurement. End-vertebra tilts are chained rather
 than superposed, and tilt ramps are linear so curvature is piecewise constant.
 
-### 2.6 Real vertebral orientations from CT
+### 2.6 A rendered phantom radiograph
+
+The phantom of section 2.5 is given vertebral bodies with cortical endplates,
+pedicles, laminae, spinous and transverse processes, ribs, a shoulder girdle
+and a pelvis, and placed in a torso containing aerated lungs, the mediastinum
+and the abdomen; the volume is line-integrated along the beam to give the
+films in Figure 1.
+
+Anthropomorphic digital phantoms and digitally reconstructed radiographs are
+long established [Segars 2010], and nothing here is new as imaging physics:
+scatter, beam hardening and trabecular texture are not modelled, and the
+attenuation values were chosen to order correctly rather than to match a
+measured spectrum. **No result in this paper is measured from it.** It is
+used because the renderer and the measurement code share one geometry object,
+so landmarks projected by the forward model of section 2.2 fall on the
+anatomy that was drawn, and because it carries no patient data and no
+third-party licence.
+
+### 2.7 Real vertebral orientations from CT
 
 VerSe [Löffler 2020; Liebl 2021; Sekuboyina 2021] supplies hand-corrected
 vertebral labels and segmentation masks. Extracting orientation from a mask is
@@ -214,14 +235,14 @@ dimensions and segmental angles flagged 2 of 30 scans, both at the cranial
 edge of the field of view, and those two were the only scans where the
 reconstruction was not exact.
 
-### 2.7 Scope
+### 2.8 Scope
 
 Landmark detection from radiographic pixels was **not** evaluated. Landmarks
 were projected from the CT-derived model and detector error injected as a
 stated perturbation. This isolates the measurement layer, which is the subject
 of the paper.
 
-### 2.8 Ethics
+### 2.9 Ethics
 
 This study used the publicly available, de-identified VerSe collection and
 synthetic phantoms. No patients were recruited and no identifiable data were
@@ -237,14 +258,15 @@ required. **[TBC: confirm wording against the author's institutional policy.]**
 Of 80 scans in the VerSe 2019 training release, 48 were excluded because the
 field of view did not span the thoracolumbar junction with sufficient
 vertebrae on both sides and 2 failed to process, leaving 30; the automated
-quality check passed 28 (400 vertebrae, 70 measurable curves). Axial rotation
+quality check passed 28. Those 28 hold 394 vertebrae with measurable
+pedicles, and 26 of them carry at least one structural curve, 70 in all. Axial rotation
 present: median 3.8°, 90th percentile 10.5°, maximum 26.4°.
 
 ### 3.2 Without the pedicles, the measurement is biased
 
 Over orientations drawn uniformly across the anatomical range (coronal ±35°,
 sagittal ±30°, axial ±30°), the endplate normal recovered from four corners
-per view was in error by a median of 5.50°, 90th percentile 12.99°, maximum
+per view was in error by a median of 5.60°, 90th percentile 12.82°, maximum
 22.84°, growing linearly with the rotation present to 12.8° at 30°.
 
 **Table 1** and **Figure 2a**.
@@ -256,27 +278,29 @@ With exact pedicles the solution was exact (maximum error 2.5 × 10⁻¹² ° ov
 
 | pedicle localisation error | median | 90th pct | maximum |
 |---|---|---|---|
-| none (four corners only) | 5.50 | 12.99 | 22.84 |
-| 3 mm | 1.27 | 3.82 | 8.45 |
-| 2 mm | 0.86 | 2.44 | 4.02 |
-| 1 mm | 0.43 | 1.15 | 3.03 |
-| 0.5 mm | 0.21 | 0.60 | 1.36 |
+| none (four corners only) | 5.60 | 12.82 | 22.84 |
+| 3 mm | 1.25 | 3.37 | 7.23 |
+| 2 mm | 0.82 | 2.56 | 5.57 |
+| 1 mm | 0.43 | 1.18 | 1.97 |
+| 0.5 mm | 0.21 | 0.57 | 1.50 |
+| 0.25 mm | 0.10 | 0.27 | 0.68 |
 | exact | 0.00 | 0.00 | 0.00 |
 
 Degrees of endplate-normal error. **Figure 2b.**
 
-The 90th-percentile residual crosses 1° at 0.9 mm. Published whole-spine
+The 90th-percentile residual is 0.57° at 0.5 mm and 1.18° at 1 mm, so it
+crosses 1° at about 0.85 mm. Published whole-spine
 landmark detectors report median localisation errors of 1.5–2.4 mm cervical,
-2.1–3.0 mm lumbosacral and 2.4–4.3 mm thoracic [Refs 20–22], so **0.9 mm is a
-target rather than a current capability**. At 3 mm — the thoracic spine as
+2.1–3.0 mm lumbosacral and 2.4–4.3 mm thoracic [Refs 20–22], so **a
+millimetre is a target rather than a current capability**. At 3 mm — the thoracic spine as
 reported today, and where the deformity usually is — the median bias still
-falls from 5.50° to 1.27°.
+falls from 5.60° to 1.25°.
 
 ### 3.4 A normative pedicle table is sufficient
 
 Taking the half-separation and posterior offset from a table rather than
-measuring them cost a median of 0.13° at 1 mm of table error and 0.25° at
-2 mm. The interquartile spread observed across 400 vertebrae was 12.3–15.4 mm
+measuring them cost a median of 0.13° at 1 mm of table error and 0.27° at
+2 mm. The interquartile spread observed across the 394 vertebrae was 12.3–15.4 mm
 in separation and 25.0–29.4 mm in posterior offset, inside the regime where it
 does not matter. **Figure 2c**, **Table 2**.
 
@@ -287,45 +311,76 @@ does not matter. **Figure 2c**, **Table 2**.
 
 The posterior offset carries the rotation signal and runs from 19 mm at T1 to
 about 29 mm in the lumbar spine, so one degree of rotation displaces the
-projected midpoint by 0.33–0.51 mm. That, not the endplate geometry, sets the
+projected midpoint by 0.33–0.51 mm. The table is regenerated by
+`tools/normative_pedicles.py`, which reports the spread behind each median. That, not the endplate geometry, sets the
 millimetre requirement.
 
 ### 3.5 Real orientations
 
-On the 394 VerSe vertebrae with measurable pedicles, the median endplate
+Pooling the 394 VerSe vertebrae with measurable pedicles, the median endplate
 normal error was 0.55° without the pedicles and 0.16° with them at 1 mm of
-localisation error and the normative table. Rotations in this cohort are
+localisation error and the normative table. (Section 3.7 aggregates the same
+quantity differently, taking the worst vertebra in each spine and then the
+median across spines, which is the larger number a reader should hold a
+pipeline to.) Rotations in this cohort are
 modest (median 3.8°), so the phantom carries the scoliotic range.
 
-### 3.6 The coronal projection reports about half the deformity
+### 3.6 The coronal projection always reports less, and the measurement plane is nowhere near coronal
 
-Across all 70 curves the three-dimensional angle exceeded the coronal angle;
-in none was the coronal angle the larger.
+Across all 70 curves, from 26 spines, the three-dimensional angle exceeded the
+coronal angle; in none was the coronal angle the larger.
 
 | | median | 90th pct | maximum |
 |---|---|---|---|
-| coronal | 9.97 | 16.33 | 26.19 |
-| maximum over vertical planes | 21.13 | 34.35 | 45.64 |
+| coronal | 9.53 | 16.18 | 26.19 |
+| maximum over vertical planes | 19.30 | 33.62 | 45.64 |
 | *plan d'élection* (centroid plane) | 19.75 | 33.65 | 45.55 |
-| dihedral angle between endplates | 21.12 | 33.76 | 45.53 |
+| dihedral angle between endplates | 18.78 | 33.55 | 45.53 |
 
-Degrees. The three three-dimensional definitions agree to within 1.4° at the
-median, so the conclusion does not depend on which is chosen. The centroid
-plane is tilted a median of 5.2° (maximum 28.9°) from vertical, which places
-it outside the family a rotating radiograph can realise and explains the seven
-curves in which its angle exceeded the vertical-plane maximum.
+Degrees, per curve. The three three-dimensional definitions agree to within
+1.0° at the median, so the conclusion does not depend on which is chosen. The
+centroid plane is tilted a median of 5.2° (maximum 28.9°) from vertical, which
+places it outside the family a rotating radiograph can realise and explains
+the seven curves in which its angle exceeded the vertical-plane maximum.
 
 **Figure 3.**
 
+**The ratio is not the finding.** The plane of maximum curvature lies a median
+of 53.6° from coronal (90th percentile 76.1°), and over the same level pairs
+the sagittal angle has a median of 15.60° against the coronal 9.53°. In a
+spine that is nearly straight coronally and normally kyphotic sagittally, the
+maximising plane rotates towards the sagittal and reports the kyphosis, so a
+three-dimensional angle around twice the coronal one is what the geometry
+requires and is not evidence about scoliosis. Stratified by the size of the
+coronal curve, the ratio falls rather than holds:
+
+| coronal band | n | coronal | three-dimensional | ratio | plane from coronal |
+|---|---|---|---|---|---|
+| 0–10° | 38 | 6.62 | 12.49 | 1.89 | 57.5° |
+| 10–20° | 29 | 12.06 | 21.66 | 1.80 | 51.5° |
+| 20–30° | 3 | 24.12 | 29.66 | 1.23 | 36.6° |
+| ≥ 30° | 0 | — | — | — | — |
+
+Medians, degrees. The three curves at or above 20° give ratios of 1.13, 1.25
+and 1.28 individually.
+
 **Cohort caveat.** VerSe is a general and fracture CT collection, not a
-scoliosis cohort: median coronal Cobb 9.5°, one curve of 70 above 25°. The
-direction and mechanism of the shortfall are established here on real anatomy;
-its magnitude in scoliosis is not, and cannot be from this dataset.
+scoliosis cohort. Of 80 scans, 30 span the thoracolumbar junction contiguously,
+28 pass the dimension check of section 2.7, and 26 carry at least one
+structural curve; the largest coronal curve among them is 26.2° and none
+reaches 30°. What this establishes on real anatomy is the direction of the
+shortfall, and its mechanism — the plane in which the deformity is largest is
+not the plane the measurement is made in, by a wide margin. The magnitude of
+the shortfall in scoliosis is not established here and cannot be from this
+dataset.
 
 ### 3.7 Robustness to landmark error
 
-Medians across the 28 spines, with isotropic Gaussian error on every corner
-before any measurement:
+Medians across the 28 spines of the **worst vertebra in each spine**, with
+isotropic Gaussian error on every corner before any measurement. Per-vertebra
+medians over the pooled 394 vertebrae are several times smaller (section 3.5);
+the per-spine worst case is reported here because a measurement is only as
+good as the level a reader happens to need.
 
 | corner error | 0 mm | 0.5 mm | 1.0 mm | 2.0 mm |
 |---|---|---|---|---|
@@ -372,8 +427,8 @@ since 1969.
 
 **Why the specification matters more than the bias.** Reporting that a method
 is biased is of limited use unless the fix is actionable. The contribution
-here is the accuracy target — 0.9 mm for a 90th-percentile residual under a
-degree — and the finding that pedicle geometry need not be measured per
+here is the accuracy target — under a millimetre for a 90th-percentile
+residual below a degree — and the finding that pedicle geometry need not be measured per
 patient, which removes what would otherwise be an obstacle to deployment.
 
 **Detectors are not there yet, and it still helps.** At the 2.4–4.3 mm
@@ -390,8 +445,12 @@ d'élection* tilts furthest out of vertical.
 
 **Limitations.**
 
-1. Landmark detection from pixels is outside the scope by design; the results
-   describe the measurement layer given landmarks.
+1. Landmark detection from pixels is outside the scope by design, and no
+   result here is measured from a radiograph, real or rendered: the
+   measurement layer is characterised given landmarks, with the required
+   landmark accuracy stated so that a detector can be held to it. An
+   end-to-end evaluation on standing films with detected landmarks remains
+   to be done.
 2. VerSe is supine axial CT, not standing radiography, and is a general and
    fracture collection rather than a scoliosis cohort. Real axial rotations in
    it are modest.
@@ -419,11 +478,18 @@ fair evaluation of the labelling component.
 ## 5. Reproducibility
 
 All results are produced by `tools/pedicle_requirement.py`,
-`tools/validate_verse.py`, `tools/make_figures.py` and
-`tools/make_verse_figure.py` in the accompanying repository
+`tools/validate_verse.py`, `tools/coronal_shortfall.py`,
+`tools/normative_pedicles.py`,
+`tools/make_figures.py` and `tools/make_verse_figure.py` in the accompanying
+repository
 **[TBC: URL and archived DOI]**, over the public VerSe release. Every figure
 except Figure 3 is generated from phantoms; Figure 3 plots measurements
 computed from the public collection rather than any image from it.
+
+Each table states the population it is aggregated over, because they are not
+the same: section 3.6 pools structural curves, section 3.5 pools vertebrae,
+and section 3.7 takes the worst vertebra in each spine. No number in this
+paper was transcribed between aggregations.
 
 ---
 
@@ -476,13 +542,14 @@ this core needs declaring.]**
    on the right axis.
 
 Only Figure 3 derives from patient data, and it plots measurements rather than
-images. Every other figure is rendered from a phantom and carries no patient
-data and no third-party licence.
+images. Every other figure is rendered from the phantom of sections 2.5 and
+2.6 and carries no patient data and no third-party licence, so a reader can
+regenerate them from the repository alone.
 
 ## Tables
 
 1. Endplate-normal error with and without pedicles, over the anatomical range.
-2. Normative pedicle geometry per level, from 400 vertebrae.
+2. Normative pedicle geometry per level, from 394 vertebrae.
 3. The four angle definitions compared on 70 real curves.
 
 ---
@@ -542,7 +609,10 @@ its source during preparation.*
     radiographs. Sci Rep 2021. PMC8096829.
 21. Busscher I, et al. Comparative anatomical dimensions of the complete human
     and porcine spine. Eur Spine J 2010. *(morphometric comparison in section
-    2.6; to be confirmed as the intended source.)*
-22. Roussouly P, et al. Classification of the normal variation in the sagittal
+    2.7; to be confirmed as the intended source.)*
+22. Segars WP, Sturgeon G, Mendonca S, Grimes J, Tsui BMW. 4D XCAT phantom
+    for multimodality imaging research. Med Phys 2010;37:4902-15. *(prior art
+    for anthropomorphic digital phantoms and DRR rendering.)*
+23. Roussouly P, et al. Classification of the normal variation in the sagittal
     alignment of the human lumbar spine and pelvis in the standing position.
     Spine 2005;30:346-53. *(basis for the piecewise-circular-arc phantom.)*
