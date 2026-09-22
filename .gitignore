@@ -16,3 +16,9 @@ venv/
 *.dicom
 data/private/
 results/
+
+# Local Claude Code tooling config
+.claude/
+
+# Generated artefacts
+outputs/

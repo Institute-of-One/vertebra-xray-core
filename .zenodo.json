@@ -1,0 +1,25 @@
+{
+  "title": "vertebra-xray-core: identifiable three-dimensional Cobb angles from biplanar spine radiographs",
+  "description": "<p>A measurement core for spinal deformity, accompanying Institute of One research note IORN-014.</p><p>Four endplate corners per view constrain only two of the three rotations that define a vertebra's orientation, so a three-dimensional Cobb angle computed from biplanar endplate landmarks alone is not identifiable. Adding the two pedicle centroids, already visible on the frontal view and the basis of the Nash-Moe and Perdriolle gradings, closes the system exactly.</p><p>The package implements the measurement layer given landmarks: biplanar reconstruction of vertebral orientation, three definitions of the three-dimensional Cobb angle, structural curve detection, per-case uncertainty by bootstrap, vertebral orientation measured from CT segmentation masks, a normative pedicle table from 394 VerSe vertebrae, and phantoms with closed-form angles. Landmark detection from pixels is out of scope by design.</p><p>No patient data are contained or redistributed. Validation uses synthetic phantoms and the public VerSe collection, which is read where it lives; no image from it is reproduced.</p>",
+  "upload_type": "software",
+  "license": "MIT",
+  "access_right": "open",
+  "creators": [
+    {
+      "name": "Yamamoto, Shuji",
+      "affiliation": "Institute of One, LISIT Co., Ltd., Tokyo, Japan",
+      "orcid": "0000-0001-9211-1071"
+    }
+  ],
+  "keywords": [
+    "scoliosis",
+    "Cobb angle",
+    "spinal deformity",
+    "biplanar radiography",
+    "vertebral rotation",
+    "identifiability",
+    "measurement uncertainty",
+    "IORN-014"
+  ],
+  "language": "eng"
+}

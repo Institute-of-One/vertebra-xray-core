@@ -1,7 +1,11 @@
 # vertebra-xray-core
 
-Training-free vertebral labelling and three-dimensional Cobb angles from
-biplanar spine radiographs, with a stated uncertainty on every number.
+[![CI](https://github.com/Institute-of-One/vertebra-xray-core/actions/workflows/ci.yml/badge.svg)](https://github.com/Institute-of-One/vertebra-xray-core/actions/workflows/ci.yml)
+<!-- DOI badge goes here once the first release is archived on Zenodo. -->
+
+Three-dimensional Cobb angles from biplanar spine radiographs, with a stated
+uncertainty on every number — and the two extra landmarks that make the
+measurement identifiable in the first place.
 
 This is the measurement core. It does **not** detect vertebrae in an image,
 and that is deliberate: detection is where the field already competes, and

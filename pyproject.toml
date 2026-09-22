@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "vertebra-xray-core"
 version = "0.1.0"
-description = "Training-free vertebral labelling and three-dimensional Cobb angles from biplanar spine radiographs, with per-case uncertainty."
+description = "Identifiable three-dimensional Cobb angles from biplanar spine radiographs, with per-case uncertainty."
 readme = "README.md"
 license = { text = "MIT" }
 requires-python = ">=3.10"
@@ -34,7 +34,7 @@ ct = ["TotalSegmentator>=2.0", "nibabel>=5.0", "SimpleITK>=2.2"]
 # Figure generation for the manuscript.
 figures = ["matplotlib>=3.7"]
 dev = [
-  "pytest>=7.4", "pytest-cov>=4.1", "ruff>=0.4", "matplotlib>=3.7",
+  "pytest>=7.4", "pytest-cov>=4.1", "ruff>=0.4", "mypy>=1.10", "matplotlib>=3.7",
 ]
 
 [project.urls]
@@ -53,6 +53,29 @@ addopts = "-ra"
 markers = [
   "slow: resampling studies that take more than a second",
 ]
+# Our own deprecations are errors; the scientific stack's are not ours to fix
+# on its schedule, and CI resolves the newest release of each.
+filterwarnings = [
+  "error::DeprecationWarning",
+  "ignore::DeprecationWarning:numpy",
+  "ignore::DeprecationWarning:scipy",
+  "ignore::DeprecationWarning:matplotlib",
+]
+
+[tool.mypy]
+# 3.12 rather than the 3.10 floor: recent numpy stubs use PEP 695 `type`
+# statements, which a 3.10 target rejects outright. Runtime compatibility with
+# 3.10 is what the test matrix is for.
+python_version = "3.12"
+files = ["vertebra_xray_core"]
+warn_unused_ignores = true
+warn_redundant_casts = true
+
+[[tool.mypy.overrides]]
+# Optional dependencies, and ones whose stubs are not worth following.
+module = ["scipy.*", "matplotlib.*", "nibabel.*", "SimpleITK.*"]
+ignore_missing_imports = true
+follow_imports = "skip"
 
 [tool.ruff]
 line-length = 100

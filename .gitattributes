@@ -1,0 +1,5 @@
+* text=auto eol=lf
+*.png binary
+*.nii binary
+*.nii.gz binary
+*.pdf binary
