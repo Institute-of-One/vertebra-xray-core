@@ -155,13 +155,29 @@ def figure_uncertainty(out: Path) -> None:
     stability = [
         next(u for u in sampled[s] if u.name == "MT").end_vertebra_stability for s in sigmas
     ]
-    axes[1].fill_between(sigmas, 0, endplate, alpha=0.65, label="drawing the endplate lines")
-    axes[1].fill_between(sigmas, endplate, total, alpha=0.65, label="choosing the end vertebrae")
+    axes[1].fill_between(sigmas, 0, endplate, alpha=0.65, color="#1f77b4")
+    axes[1].fill_between(sigmas, endplate, total, alpha=0.65, color="#ff7f0e")
     axes[1].plot(sigmas, total, color="#222222", lw=1.4)
     axes[1].set_xlabel("corner localisation error (mm)")
     axes[1].set_ylabel("standard deviation of the main thoracic angle (deg)")
     axes[1].set_title("b  where the spread comes from")
-    axes[1].legend(fontsize=8, frameon=False, loc="upper left")
+
+    # Label the bands where they are rather than in a legend. A legend here
+    # can only go top left, which is where the stability trace starts, and the
+    # two printed on top of each other.
+    axes[1].text(
+        2.6, float(np.interp(2.6, sigmas, endplate)) * 0.45,
+        "drawing the endplate lines",
+        fontsize=8, color="#0d3f61", ha="center", va="center",
+    )
+    orange_at = 3.4
+    axes[1].text(
+        orange_at,
+        0.5 * (float(np.interp(orange_at, sigmas, endplate))
+               + float(np.interp(orange_at, sigmas, total))),
+        "choosing the" + NL + "end vertebrae",
+        fontsize=8, color="#8a4100", ha="center", va="center", linespacing=1.3,
+    )
 
     twin = axes[1].twinx()
     twin.plot(sigmas, stability, color="#7a5b9a", lw=1.2, ls=":", marker="s", ms=3)
