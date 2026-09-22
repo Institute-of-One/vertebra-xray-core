@@ -20,7 +20,7 @@ from pathlib import Path
 import pypandoc
 
 HERE = Path(__file__).resolve().parent
-TARGETS = ("qims_manuscript", "title_page", "cover_letter")
+TARGETS = ("qims_manuscript", "qims_manuscript_masked", "title_page", "cover_letter")
 
 
 def build(stem: str) -> Path:
