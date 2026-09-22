@@ -32,17 +32,22 @@ architecture, and it is addressed to the people building automated
 measurement rather than to surgeons. That is the readership *QIMS* serves.
 
 **Ethics — a point I would like to raise explicitly.** This study analysed
-only computational phantoms and the publicly available, de-identified VerSe CT
-collection. No patients were recruited, no identifiable data were accessed,
-and no new human or animal data were generated, so institutional review board
-approval and informed consent were not applicable rather than waived. I note
-that the submission checklist is worded for studies that did obtain approval
-and consent, and I did not wish to affirm that wording where it does not
-describe the work. The Ethical Statement in the manuscript sets out the
-position accurately, and it carries the accountability sentence the journal
-requires verbatim. **[TBC: if the editorial office would prefer different
-wording, or a different route through the checklist, I would be glad to
-follow it.]**
+computational phantoms and the publicly available VerSe collection of
+de-identified spine CT. No participants were recruited by me and no
+identifiable data were accessed, so no further review board approval was
+sought and no consent could be obtained by me. The approval for the underlying
+imaging exists and is held by the source collection: its retrospective
+evaluation was approved by the local institutional review board with written
+informed consent waived under Proposal 27/19 S-SR, and the scans were
+anonymised and defaced before release. The work conformed to the Declaration
+of Helsinki as revised in 2013, and the Ethical Statement in the manuscript
+carries the accountability sentence the journal requires verbatim.
+
+I note that the submission checklist is worded for studies that obtained
+approval and consent themselves, and I did not wish to affirm that wording
+where it does not describe the work. If the editorial office would prefer
+different wording, or a different route through the checklist, I would be
+glad to follow it.
 
 **Reporting checklist.** I could not identify an EQUATOR reporting guideline
 that covers a study of this kind, which characterises a measurement layer
@@ -63,13 +68,21 @@ one of five scripts in a public repository **[TBC: URL]**, archived at
 by hand between analyses, and each table states the population it is
 aggregated over.
 
-**Conflicts of interest.** I am affiliated with LISIT Co., Ltd., which is
-developing a commercial application built on the measurement core described in
-this article. The core itself, including every method reported and the code
-behind every result, is released under the MIT licence and is freely
-available; the product is not required to reproduce or use anything in the
-paper. This is stated in the manuscript, and the ICMJE disclosure form
-accompanies this submission.
+**Conflicts of interest.** I am the representative of LISIT Co., Ltd. (Tokyo,
+Japan) and Chief Executive Officer of TexelCraft OÜ. Institute of One is the
+open-research initiative of LISIT Co., Ltd., which provides institutional
+oversight and accountability for this work. The measurement core is released
+under the MIT licence, and I have a commercial interest in downstream products
+that may use it, including a graphical application under development at LISIT
+Co., Ltd.; that product is not required to reproduce or to use anything in the
+paper. No patient or customer data were used. This is stated in the
+manuscript, and the ICMJE disclosure form accompanies this submission.
+
+**Use of artificial intelligence.** A generative AI assistant (Claude,
+Anthropic) supported software development and drafted portions of this
+manuscript. Every result was produced by executable code in the released
+repository and was re-run and verified by me. The AI system is not an author
+and does not meet authorship criteria. This is stated in the manuscript.
 
 **Declarations.** The manuscript has not been published previously and is not
 under consideration by any other journal. I am the sole author, I have read
