@@ -36,5 +36,12 @@ identifiers:
   - type: other
     value: IORN-014
     description: Institute of One research note number for the accompanying paper.
-# TODO: add the Zenodo DOI here once the first release is archived, and the
-# paper's DOI under preferred-citation, once accepted.
+  - type: doi
+    value: 10.5281/zenodo.22893477
+    description: >-
+      Concept DOI, resolving to the latest archived version. Cite this one
+      unless a specific version is meant.
+  - type: doi
+    value: 10.5281/zenodo.22893478
+    description: Version DOI for v0.1.0, the release used in IORN-014.
+# TODO: add the paper's DOI under preferred-citation once it is accepted.

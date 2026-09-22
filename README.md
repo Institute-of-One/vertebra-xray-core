@@ -1,7 +1,7 @@
 # vertebra-xray-core
 
 [![CI](https://github.com/Institute-of-One/vertebra-xray-core/actions/workflows/ci.yml/badge.svg)](https://github.com/Institute-of-One/vertebra-xray-core/actions/workflows/ci.yml)
-<!-- DOI badge goes here once the first release is archived on Zenodo. -->
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22893477.svg)](https://doi.org/10.5281/zenodo.22893477)
 
 Three-dimensional Cobb angles from biplanar spine radiographs, with a stated
 uncertainty on every number — and the two extra landmarks that make the

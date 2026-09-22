@@ -63,8 +63,8 @@ transfer of copyright on acceptance, so no image from it appears anywhere in
 the manuscript.
 
 **Data and code.** Every number and every figure in the paper is produced by
-one of five scripts in a public repository **[TBC: URL]**, archived at
-**[TBC: Zenodo DOI]**, over the public VerSe release. Nothing was transcribed
+one of five scripts in a public repository, https://github.com/Institute-of-One/vertebra-xray-core,
+archived at https://doi.org/10.5281/zenodo.22893477, over the public VerSe release. Nothing was transcribed
 by hand between analyses, and each table states the population it is
 aggregated over.
 
