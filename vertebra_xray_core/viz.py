@@ -536,20 +536,35 @@ def angle_between_normals(model: SpineModel3D, upper: str, lower: str) -> float:
 # --------------------------------------------------------------------------
 
 
-def plot_radiograph(radiograph, ax: Axes | None = None, *, gamma: float = 1.0) -> Axes:
+def plot_radiograph(
+    radiograph,
+    ax: Axes | None = None,
+    *,
+    gamma: float = 1.0,
+    polarity: str = "film",
+) -> Axes:
     """Draw a simulated radiograph in millimetre coordinates.
 
     The extent is in the same ``math`` frame the landmarks are projected into,
     so anything from
     :meth:`~vertebra_xray_core.spine3d.SpineModel3D.project` overlays on top
     without further transformation.
+
+    ``Radiograph.image`` holds transmitted intensity, which is the physical
+    quantity; a radiograph as anyone reads one is its negative, bone white and
+    air black. ``polarity="film"`` shows that, ``"transmission"`` shows the
+    array as it stands.
     """
     plt = _require_matplotlib()
     if ax is None:
         _, ax = plt.subplots(figsize=(4.0, 8.5))
+    if polarity not in {"film", "transmission"}:
+        raise ValueError(f"polarity must be 'film' or 'transmission', got {polarity!r}")
     image = radiograph.image ** gamma if gamma != 1.0 else radiograph.image
     ax.imshow(
-        image, cmap="gray", origin="lower", extent=radiograph.extent, aspect="equal",
+        image,
+        cmap="gray_r" if polarity == "film" else "gray",
+        origin="lower", extent=radiograph.extent, aspect="equal",
         interpolation="bilinear",
     )
     ax.set_axis_off()

@@ -175,58 +175,76 @@ def figure_uncertainty(out: Path) -> None:
 
 
 def figure_landmarks(out: Path) -> None:
-    """What a detector is being asked to produce, and the spine it comes from.
+    """The two films the measurement is made from, and the spine that is not in either.
 
-    Both panels are rendered from the same phantom, so the pedicle shadows in
-    the radiograph and the pedicle landmarks drawn on it are the same points.
-    No patient data and no licensed image is involved.
+    Both radiographs and the rendering come from one phantom, so the pedicle
+    shadows in the frontal film and the pedicle landmarks drawn on it are the
+    same points. No patient data and no licensed image is involved.
     """
     model = phantom.adolescent_idiopathic_scoliosis(
         main_thoracic_deg=50.0, lumbar_deg=32.0, axial_rotation_deg=14.0
     )
-    radiograph = simulate.simulate_radiograph(model, PA)
-    frontal = model.project(PA)
-    pedicle_points = viz.project_pedicles_to_view(model, PA, normative_pedicles)
+    frontal, lateral = model.project(PA), model.project(LAT)
     curves = cobb.cobb_angles(frontal).curves
     three_d = cobb3d.cobb3d_for_curves(model, curves)
-    major = max(three_d, key=lambda c: c.pmc_deg)
+    major_curve = max(curves, key=lambda c: c.angle_deg)
+    major = next(m for m in three_d if m.upper_label == major_curve.upper_label)
+    sagittal = cobb3d.measure_between_levels(model, "T1", "T12")
 
-    # Crop the films to the trunk. Left at the full rendered extent they are
-    # mostly air, and with equal aspect that makes them squat beside the
-    # three-dimensional panel.
-    trunk = float(np.median(model.centroids[:, 0]))
-    crop = (trunk - 175.0, trunk + 175.0)
+    films = {
+        "pa": simulate.simulate_radiograph(model, PA),
+        "lateral": simulate.simulate_radiograph(model, LAT),
+    }
+    pedicle_points = viz.project_pedicles_to_view(model, PA, normative_pedicles)
 
-    fig = plt.figure(figsize=(11.0, 7.4))
-    grid = fig.add_gridspec(1, 3, width_ratios=[1.0, 1.0, 1.15], wspace=0.04)
+    fig = plt.figure(figsize=(12.6, 7.8))
+    grid = fig.add_gridspec(1, 3, width_ratios=[1.0, 1.0, 1.15], wspace=0.05)
 
+    def annotate(ax, text):
+        ax.text(
+            0.5, -0.045, text, transform=ax.transAxes, ha="center", va="top",
+            fontsize=8.5, color="#1a1a1a",
+        )
+
+    # -- frontal -----------------------------------------------------------
     ax = fig.add_subplot(grid[0, 0])
-    viz.plot_radiograph(radiograph, ax)
-    ax.set_xlim(*crop)
-    ax.set_title("a  simulated frontal radiograph", fontsize=9)
-
-    ax = fig.add_subplot(grid[0, 1])
-    viz.plot_radiograph(radiograph, ax, gamma=1.3)
-    ax.set_xlim(*crop)
+    film = films["pa"]
+    viz.plot_radiograph(film, ax, gamma=0.62)
+    # Centred between the top and the bottom of the spine, the way a
+    # radiographer centres the cassette on the patient, rather than on the
+    # median vertebra: this phantom is 52 mm decompensated in the coronal
+    # plane, and a crop centred on the median cuts the pelvis off.
+    labels = list(model.labels)
+    ends = model.centroids[[labels.index('T1'), labels.index('L5')], 0]
+    centre = float(ends.mean())
+    ax.set_xlim(centre - 192.0, centre + 192.0)
     viz.plot_landmark_overlay(
-        frontal, ax, pedicles=pedicle_points,
-        curves=tuple(c for c in curves if c.is_major),
+        frontal, ax, pedicles=pedicle_points, curves=(major_curve,), label_every=3
     )
-    ax.set_title(
-        "b  four corners (blue) leave rotation undetermined;"
-        + NL
-        + "two pedicles (gold) close it",
-        fontsize=9,
-    )
+    ax.set_title("a  frontal film: four corners and two pedicles", fontsize=9)
+    annotate(ax, f"coronal Cobb {major.coronal_deg:.0f}°")
 
+    # -- lateral -----------------------------------------------------------
+    ax = fig.add_subplot(grid[0, 1])
+    film = films["lateral"]
+    viz.plot_radiograph(film, ax, gamma=0.62)
+    depth_centre = float(np.median(lateral.centroids[:, 0]))
+    ax.set_xlim(depth_centre - 168.0, depth_centre + 168.0)
+    viz.plot_landmark_overlay(lateral, ax, curves=(), label_every=3)
+    ax.set_title("b  lateral film: four corners, no rotation cue", fontsize=9)
+    annotate(ax, f"T1-T12 sagittal {sagittal.sagittal_deg:.0f}°")
+
+    # -- the spine itself --------------------------------------------------
     ax = fig.add_subplot(grid[0, 2])
     viz.plot_spine_3d(
         model, ax, curves=curves, show_normals=True, pmc_plane_for=major,
-        label_every=3, scale_bar_mm=100, view=(14.0, 34.0),
+        label_every=3, scale_bar_mm=100, view=(16.0, 54.0),
     )
-    ax.set_title(
-        "c  the same spine in three dimensions," + NL + "with its measurement plane",
-        fontsize=9,
+    ax.set_title("c  the spine, seen from neither film", fontsize=9)
+    annotate(
+        ax,
+        f"three-dimensional {major.pmc_deg:.0f}°, in a plane "
+        f"{major.pmc_from_coronal_deg:+.0f}° from coronal",
     )
 
     _save(fig, out / "fig1_landmarks.png")
