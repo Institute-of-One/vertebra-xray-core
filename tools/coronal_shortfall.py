@@ -46,9 +46,7 @@ def _curve_row(model: SpineModel3D, curve) -> dict[str, float]:
         "plane": abs(measured.pmc_from_coronal_deg),
         # The dihedral angle between the two endplates: the largest angle any
         # plane can show, and the definition that needs no plane at all.
-        "dihedral": abs(
-            float(geo.wrap_to_signed_right_angle(geo.angle_between(upper, lower)))
-        ),
+        "dihedral": abs(float(geo.wrap_to_signed_right_angle(geo.angle_between(upper, lower)))),
     }
     try:
         normal = cobb3d.centroid_plane_normal(
@@ -62,7 +60,9 @@ def _curve_row(model: SpineModel3D, curve) -> dict[str, float]:
         # How far that plane leans out of vertical. A rotating radiograph can
         # only realise vertical planes, so a tilted one is not a view anyone
         # can take.
-        row["election_tilt"] = abs(90.0 - float(geo.angle_between(normal, np.array([0.0, 0.0, 1.0]))))
+        row["election_tilt"] = abs(
+            90.0 - float(geo.angle_between(normal, np.array([0.0, 0.0, 1.0])))
+        )
     return row
 
 
@@ -136,7 +136,9 @@ def report(rows: Sequence[dict], funnel: dict[str, int]) -> None:
     print(f"sagittal angle over the same levels:     median {m:.2f}")
 
     print("\nstratified by the size of the coronal curve")
-    print(f"  {'band':>12} {'n':>4} {'coronal':>9} {'3-D':>9} {'excess':>9} {'ratio':>7} {'plane':>7}")
+    print(
+        f"  {'band':>12} {'n':>4} {'coronal':>9} {'3-D':>9} {'excess':>9} {'ratio':>7} {'plane':>7}"
+    )
     for low, high in BANDS:
         keep = [r for r in rows if low <= r["coronal"] < high]
         if not keep:
@@ -146,16 +148,20 @@ def report(rows: Sequence[dict], funnel: dict[str, int]) -> None:
         cor = float(np.median([r["coronal"] for r in keep]))
         pmc = float(np.median([r["pmc"] for r in keep]))
         plane = float(np.median([r["plane"] for r in keep]))
-        print(f"  {label:>12} {len(keep):>4} {cor:>9.2f} {pmc:>9.2f} {pmc - cor:>9.2f}"
-              f" {pmc / max(cor, 1e-9):>7.2f} {plane:>7.1f}")
+        print(
+            f"  {label:>12} {len(keep):>4} {cor:>9.2f} {pmc:>9.2f} {pmc - cor:>9.2f}"
+            f" {pmc / max(cor, 1e-9):>7.2f} {plane:>7.1f}"
+        )
 
     large = [r for r in rows if r["coronal"] >= 20.0]
     if large:
         print(f"\nevery curve at or above 20 deg (n={len(large)})")
         for r in sorted(large, key=lambda r: -r["coronal"]):
-            print(f"  coronal {r['coronal']:6.2f}  3-D {r['pmc']:6.2f}  "
-                  f"sagittal {r['sagittal']:6.2f}  plane {r['plane']:5.1f}  "
-                  f"ratio {r['pmc'] / r['coronal']:.2f}  {r['subject']}")
+            print(
+                f"  coronal {r['coronal']:6.2f}  3-D {r['pmc']:6.2f}  "
+                f"sagittal {r['sagittal']:6.2f}  plane {r['plane']:5.1f}  "
+                f"ratio {r['pmc'] / r['coronal']:.2f}  {r['subject']}"
+            )
 
 
 def main() -> None:

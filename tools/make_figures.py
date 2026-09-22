@@ -72,7 +72,10 @@ def figure_planes(out: Path) -> None:
     viz.plot_pmc_profile(model, three_d, axes[0])
     axes[0].set_title("a  the angle against its measurement plane", fontsize=9)
     viz.plot_axial_path(
-        model, axes[1], measurements=three_d, title="b  the centreline from above",
+        model,
+        axes[1],
+        measurements=three_d,
+        title="b  the centreline from above",
     )
     fig.subplots_adjust(wspace=0.32)
     _save(fig, out / "fig4_planes.png")
@@ -132,9 +135,7 @@ def figure_uncertainty(out: Path) -> None:
     sigmas = [0.25, 0.5, 1.0, 2.0, 3.0, 4.0]
     fig, axes = plt.subplots(1, 2, figsize=(9.5, 3.8))
 
-    sampled = {
-        sigma: uncertainty.bootstrap_cobb(frontal, sigma, resamples=600) for sigma in sigmas
-    }
+    sampled = {sigma: uncertainty.bootstrap_cobb(frontal, sigma, resamples=600) for sigma in sigmas}
 
     for name in ("PT", "MT", "L"):
         widths = [
@@ -166,17 +167,28 @@ def figure_uncertainty(out: Path) -> None:
     # can only go top left, which is where the stability trace starts, and the
     # two printed on top of each other.
     axes[1].text(
-        2.6, float(np.interp(2.6, sigmas, endplate)) * 0.45,
+        2.6,
+        float(np.interp(2.6, sigmas, endplate)) * 0.45,
         "drawing the endplate lines",
-        fontsize=8, color="#0d3f61", ha="center", va="center",
+        fontsize=8,
+        color="#0d3f61",
+        ha="center",
+        va="center",
     )
     orange_at = 3.4
     axes[1].text(
         orange_at,
-        0.5 * (float(np.interp(orange_at, sigmas, endplate))
-               + float(np.interp(orange_at, sigmas, total))),
+        0.5
+        * (
+            float(np.interp(orange_at, sigmas, endplate))
+            + float(np.interp(orange_at, sigmas, total))
+        ),
         "choosing the" + NL + "end vertebrae",
-        fontsize=8, color="#8a4100", ha="center", va="center", linespacing=1.3,
+        fontsize=8,
+        color="#8a4100",
+        ha="center",
+        va="center",
+        linespacing=1.3,
     )
 
     twin = axes[1].twinx()
@@ -218,8 +230,14 @@ def figure_landmarks(out: Path) -> None:
 
     def annotate(ax, text):
         ax.text(
-            0.5, -0.045, text, transform=ax.transAxes, ha="center", va="top",
-            fontsize=8.5, color="#1a1a1a",
+            0.5,
+            -0.045,
+            text,
+            transform=ax.transAxes,
+            ha="center",
+            va="top",
+            fontsize=8.5,
+            color="#1a1a1a",
         )
 
     # -- frontal -----------------------------------------------------------
@@ -231,7 +249,7 @@ def figure_landmarks(out: Path) -> None:
     # median vertebra: this phantom is 52 mm decompensated in the coronal
     # plane, and a crop centred on the median cuts the pelvis off.
     labels = list(model.labels)
-    ends = model.centroids[[labels.index('T1'), labels.index('L5')], 0]
+    ends = model.centroids[[labels.index("T1"), labels.index("L5")], 0]
     centre = float(ends.mean())
     ax.set_xlim(centre - 192.0, centre + 192.0)
     viz.plot_landmark_overlay(
@@ -253,8 +271,14 @@ def figure_landmarks(out: Path) -> None:
     # -- the spine itself --------------------------------------------------
     ax = fig.add_subplot(grid[0, 2])
     viz.plot_spine_3d(
-        model, ax, curves=curves, show_normals=True, pmc_plane_for=major,
-        label_every=3, scale_bar_mm=100, view=(16.0, 54.0),
+        model,
+        ax,
+        curves=curves,
+        show_normals=True,
+        pmc_plane_for=major,
+        label_every=3,
+        scale_bar_mm=100,
+        view=(16.0, 54.0),
     )
     ax.set_title("c  the spine, seen from neither film", fontsize=9)
     annotate(
@@ -295,8 +319,14 @@ def figure_pedicle_requirement(out: Path) -> None:
         for r in rotations:
             values = [residual(20.0, -15.0, float(r), pedicles, pedicles, noise) for _ in range(60)]
             curve.append(np.median(values))
-        axes[0].plot(rotations, curve, lw=1.6, ls=style, color="#2f6f4f",
-                     label=f"plus pedicles at {noise:.1f} mm")
+        axes[0].plot(
+            rotations,
+            curve,
+            lw=1.6,
+            ls=style,
+            color="#2f6f4f",
+            label=f"plus pedicles at {noise:.1f} mm",
+        )
     axes[0].set_xlabel("axial rotation present (deg)")
     axes[0].set_ylabel("endplate normal error (deg)")
     axes[0].set_title("a  two more landmarks remove the bias")
@@ -308,10 +338,16 @@ def figure_pedicle_requirement(out: Path) -> None:
         values = [residual(*sample(), pedicles, pedicles, noise) for _ in range(draws)]
         medians.append(np.median(values))
         p90s.append(np.quantile(values, 0.9))
-    baseline = [axial_rotation_bias(*sample()[:2], sample()[2])["normal_error_deg"]
-                for _ in range(draws)]
-    axes[1].axhline(np.median(baseline), color="#b03030", lw=1.6, ls="--",
-                    label=f"no pedicles, median {np.median(baseline):.1f} deg")
+    baseline = [
+        axial_rotation_bias(*sample()[:2], sample()[2])["normal_error_deg"] for _ in range(draws)
+    ]
+    axes[1].axhline(
+        np.median(baseline),
+        color="#b03030",
+        lw=1.6,
+        ls="--",
+        label=f"no pedicles, median {np.median(baseline):.1f} deg",
+    )
     axes[1].plot(errors, medians, marker="o", ms=4, lw=1.8, color="#2f6f4f", label="median")
     axes[1].plot(errors, p90s, marker="s", ms=4, lw=1.4, ls="--", color="#2f6f4f", label="90th pct")
     axes[1].axhline(1.0, color="#999999", lw=0.9, ls=":")
@@ -332,9 +368,12 @@ def figure_pedicle_requirement(out: Path) -> None:
             values.append(residual(*sample(), truth, pedicles, 0.0))
         medians.append(np.median(values))
         p90s.append(np.quantile(values, 0.9))
-    axes[2].plot(geometry_errors, medians, marker="o", ms=4, lw=1.8, color="#7a5b9a", label="median")
-    axes[2].plot(geometry_errors, p90s, marker="s", ms=4, lw=1.4, ls="--", color="#7a5b9a",
-                 label="90th pct")
+    axes[2].plot(
+        geometry_errors, medians, marker="o", ms=4, lw=1.8, color="#7a5b9a", label="median"
+    )
+    axes[2].plot(
+        geometry_errors, p90s, marker="s", ms=4, lw=1.4, ls="--", color="#7a5b9a", label="90th pct"
+    )
     axes[2].axvspan(0.0, 2.5, color="#cccccc", alpha=0.35)
     axes[2].text(1.25, axes[2].get_ylim()[1] * 0.85, "observed spread", ha="center", fontsize=7)
     axes[2].axhline(1.0, color="#999999", lw=0.9, ls=":")

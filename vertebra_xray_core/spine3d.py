@@ -182,7 +182,11 @@ class Projection:
     def __post_init__(self) -> None:
         if (self.sod_mm is None) != (self.sdd_mm is None):
             raise ValueError("give both sod_mm and sdd_mm, or neither")
-        if self.sod_mm is not None and not 0 < self.sod_mm < self.sdd_mm:
+        if (
+            self.sod_mm is not None
+            and self.sdd_mm is not None
+            and not 0 < self.sod_mm < self.sdd_mm
+        ):
             raise ValueError("need 0 < sod_mm < sdd_mm")
 
     @property
@@ -243,7 +247,15 @@ class SpineModel3D:
 
     def __post_init__(self) -> None:
         n = len(self.labels)
-        for name in ("centroids", "theta_deg", "phi_deg", "psi_deg", "width_mm", "depth_mm", "height_mm"):
+        for name in (
+            "centroids",
+            "theta_deg",
+            "phi_deg",
+            "psi_deg",
+            "width_mm",
+            "depth_mm",
+            "height_mm",
+        ):
             arr = np.asarray(getattr(self, name), dtype=float)
             object.__setattr__(self, name, arr)
             if len(arr) != n:
@@ -332,7 +344,9 @@ def _order_quad(quads: np.ndarray) -> np.ndarray:
 # --------------------------------------------------------------------------
 
 
-def _measured_tilts(theta: float, phi: float, psi: float, lateral_sign: float) -> tuple[float, float]:
+def _measured_tilts(
+    theta: float, phi: float, psi: float, lateral_sign: float
+) -> tuple[float, float]:
     """Endplate tilts a biplanar pair would show for a given orientation.
 
     ``lateral_sign`` is ``-1`` when the lateral view puts anterior on the left.

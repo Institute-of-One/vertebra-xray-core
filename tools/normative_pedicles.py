@@ -63,8 +63,10 @@ def report(by_level: dict[str, list[tuple[float, float]]], counts: dict[str, int
         f"\n{counts['with_pedicles']} vertebrae with measurable pedicles, "
         f"of {counts['vertebrae']} in {counts['scans']} usable spines\n"
     )
-    print(f"{'level':>6} {'n':>4} {'half-sep':>9} {'IQR':>13} "
-          f"{'offset':>9} {'IQR':>13} {'shipped':>16} {'diff':>13}")
+    print(
+        f"{'level':>6} {'n':>4} {'half-sep':>9} {'IQR':>13} "
+        f"{'offset':>9} {'IQR':>13} {'shipped':>16} {'diff':>13}"
+    )
     separations, offsets = [], []
     worst = 0.0
     for level in ALL_LEVELS:
@@ -79,16 +81,20 @@ def report(by_level: dict[str, list[tuple[float, float]]], counts: dict[str, int
         oq = np.percentile(values[:, 1], [25, 75])
         shipped = NORMATIVE_PEDICLES_BY_LEVEL.get(level)
         if shipped is None:
-            print(f"{level:>6} {len(values):>4} {sep:>9.1f} {sq[0]:>6.1f}-{sq[1]:<6.1f}"
-                  f" {off:>9.1f} {oq[0]:>6.1f}-{oq[1]:<6.1f} {'--':>16} {'--':>13}")
+            print(
+                f"{level:>6} {len(values):>4} {sep:>9.1f} {sq[0]:>6.1f}-{sq[1]:<6.1f}"
+                f" {off:>9.1f} {oq[0]:>6.1f}-{oq[1]:<6.1f} {'--':>16} {'--':>13}"
+            )
             continue
         d_sep = sep - shipped.half_separation
         d_off = off - shipped.posterior_offset
         worst = max(worst, abs(d_sep), abs(d_off))
-        print(f"{level:>6} {len(values):>4} {sep:>9.1f} {sq[0]:>6.1f}-{sq[1]:<6.1f}"
-              f" {off:>9.1f} {oq[0]:>6.1f}-{oq[1]:<6.1f}"
-              f" {shipped.half_separation:>7.1f}/{shipped.posterior_offset:<8.1f}"
-              f" {d_sep:>+6.1f}/{d_off:<+6.1f}")
+        print(
+            f"{level:>6} {len(values):>4} {sep:>9.1f} {sq[0]:>6.1f}-{sq[1]:<6.1f}"
+            f" {off:>9.1f} {oq[0]:>6.1f}-{oq[1]:<6.1f}"
+            f" {shipped.half_separation:>7.1f}/{shipped.posterior_offset:<8.1f}"
+            f" {d_sep:>+6.1f}/{d_off:<+6.1f}"
+        )
 
     print(f"\nlargest disagreement with the shipped table: {worst:.2f} mm")
     if separations:
@@ -106,7 +112,8 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--root", required=True, help="an extracted VerSe release")
     parser.add_argument(
-        "--emit", action="store_true",
+        "--emit",
+        action="store_true",
         help="print the table as a Python literal, for pasting into pedicles.py",
     )
     args = parser.parse_args()
@@ -122,8 +129,10 @@ def main() -> None:
             if not rows or level not in NORMATIVE_PEDICLES_BY_LEVEL:
                 continue
             values = np.array(rows)
-            print(f'    "{level}": PedicleGeometry'
-                  f"({np.median(values[:, 0]):.1f}, {np.median(values[:, 1]):.1f}),")
+            print(
+                f'    "{level}": PedicleGeometry'
+                f"({np.median(values[:, 0]):.1f}, {np.median(values[:, 1]):.1f}),"
+            )
 
 
 if __name__ == "__main__":

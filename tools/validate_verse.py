@@ -205,9 +205,7 @@ def evaluate(sample: verse.VerseSample, *, noise_mm: float, seed: int) -> Row:
 
 
 def _angle(u: np.ndarray, v: np.ndarray) -> float:
-    return float(
-        np.degrees(np.arctan2(np.linalg.norm(np.cross(u, v)), float(np.dot(u, v))))
-    )
+    return float(np.degrees(np.arctan2(np.linalg.norm(np.cross(u, v)), float(np.dot(u, v)))))
 
 
 def summarise(rows: list[Row]) -> str:
@@ -276,7 +274,9 @@ def summarise(rows: list[Row]) -> str:
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.split("\n")[0])
-    parser.add_argument("--root", required=True, help="directory holding an extracted VerSe release")
+    parser.add_argument(
+        "--root", required=True, help="directory holding an extracted VerSe release"
+    )
     parser.add_argument("--noise-mm", type=float, default=0.0, help="landmark jitter to inject")
     parser.add_argument("--seed", type=int, default=0)
     parser.add_argument("--limit", type=int, default=0, help="stop after this many scans")
@@ -295,7 +295,9 @@ def main(argv: list[str] | None = None) -> int:
         try:
             row = evaluate(sample, noise_mm=args.noise_mm, seed=args.seed + index)
         except Exception as exc:  # a dataset this varied will have surprises
-            row = Row(subject=sample.subject, status="failed", detail=f"{type(exc).__name__}: {exc}")
+            row = Row(
+                subject=sample.subject, status="failed", detail=f"{type(exc).__name__}: {exc}"
+            )
             if "--traceback" in sys.argv:
                 traceback.print_exc()
         rows.append(row)

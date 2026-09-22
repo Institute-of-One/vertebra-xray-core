@@ -110,9 +110,9 @@ def test_the_frontal_view_is_refused_because_its_inflections_mean_nothing():
 
 def test_the_opposite_display_convention_is_handled():
     model = phantom.normal_adult_spine()
-    mirrored = model.project(
-        Projection(view="lateral", anterior_on_image_left=False)
-    ).with_labels(None)
+    mirrored = model.project(Projection(view="lateral", anterior_on_image_left=False)).with_labels(
+        None
+    )
     result = labeling.label_by_sagittal_inflection(mirrored, anterior_on_image_left=False)
     assert result.labels == model.labels
 
@@ -178,9 +178,7 @@ def test_a_severe_coronal_curve_defeats_a_single_lateral_film():
 @pytest.mark.parametrize("main", [45.0, 60.0, 75.0, 90.0])
 @pytest.mark.parametrize("psi", [0.0, 10.0, 20.0, 30.0])
 def test_the_two_pass_biplanar_route_holds_across_the_whole_grid(main, psi):
-    model = phantom.adolescent_idiopathic_scoliosis(
-        main_thoracic_deg=main, axial_rotation_deg=psi
-    )
+    model = phantom.adolescent_idiopathic_scoliosis(main_thoracic_deg=main, axial_rotation_deg=psi)
     result = labeling.label_biplanar(
         model.project(Projection(view="pa")).with_labels(None),
         _unlabelled_lateral(model),

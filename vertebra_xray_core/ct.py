@@ -186,9 +186,7 @@ def isolate_vertebral_body(
     # distances all along its outer surface, so the erosion leaves the outside
     # of the vertebra in place and quietly does nothing.
     padded = np.pad(binary, 1, mode="constant", constant_values=False)
-    distance = ndimage.distance_transform_edt(padded, sampling=spacing_mm)[
-        1:-1, 1:-1, 1:-1
-    ]
+    distance = ndimage.distance_transform_edt(padded, sampling=spacing_mm)[1:-1, 1:-1, 1:-1]
 
     for attempt in (radius_mm, 0.75 * radius_mm, 0.5 * radius_mm, 0.25 * radius_mm):
         core = distance >= attempt
@@ -244,7 +242,6 @@ def orientation_from_core_and_posterior(
     posterior = np.asarray(posterior_points, dtype=float)
     if len(posterior) < 4:
         return orientation_from_points(core)
-
 
     backwards = posterior.mean(axis=0) - core.mean(axis=0)
     anterior = -geo.project_onto_plane(backwards, normal)
@@ -316,17 +313,17 @@ def endplate_normal_from_core(
         centres.append(block[:, :2].mean(axis=0))
         tops.append(block[:, 2].max())
         bottoms.append(block[:, 2].min())
-    centres = np.asarray(centres)
-    if len(centres) < 12:
+    stacked = np.asarray(centres)
+    if len(stacked) < 12:
         return None
 
-    middle = centres.mean(axis=0)
-    radius = central_fraction * np.abs(centres - middle).max(axis=0)
-    inside = np.all(np.abs(centres - middle) <= np.maximum(radius, cell_mm), axis=1)
+    middle = stacked.mean(axis=0)
+    radius = central_fraction * np.abs(stacked - middle).max(axis=0)
+    inside = np.all(np.abs(stacked - middle) <= np.maximum(radius, cell_mm), axis=1)
     if inside.sum() < 8:
         return None
 
-    design = np.column_stack([centres[inside], np.ones(inside.sum())])
+    design = np.column_stack([stacked[inside], np.ones(inside.sum())])
     normals = []
     for surface in (np.asarray(tops)[inside], np.asarray(bottoms)[inside]):
         fit, *_ = np.linalg.lstsq(design, surface, rcond=None)
@@ -483,8 +480,9 @@ def vertebra_from_mask(
     indices = np.argwhere(volume == label)
     if len(indices) < 4:
         raise ValueError(f"label {label} has {len(indices)} voxels, too few to measure")
-    return _measure(indices, volume.shape, np.asarray(affine, dtype=float), label,
-                    body_core_radius_mm)
+    return _measure(
+        indices, volume.shape, np.asarray(affine, dtype=float), label, body_core_radius_mm
+    )
 
 
 def _measure(
@@ -496,7 +494,8 @@ def _measure(
     cranial_hint: np.ndarray | None = None,
 ) -> VertebraGeometry:
     """Shared body of the two entry points above."""
-    spacing = tuple(float(v) for v in np.linalg.norm(affine[:3, :3], axis=0))
+    sx, sy, sz = (float(v) for v in np.linalg.norm(affine[:3, :3], axis=0))
+    spacing: tuple[float, float, float] = (sx, sy, sz)
     extent = np.array(shape)
     touches = bool((indices.min(axis=0) == 0).any() or (indices.max(axis=0) == extent - 1).any())
 
@@ -595,9 +594,7 @@ def implausible_segments(
             neighbours = [below if above == i else above]
         else:
             neighbours = [above, below]
-        jumps = [
-            max(abs(theta[i] - theta[j]), abs(phi[i] - phi[j])) for j in neighbours
-        ]
+        jumps = [max(abs(theta[i] - theta[j]), abs(phi[i] - phi[j])) for j in neighbours]
         flagged[i] = all(jump > limit for jump in jumps)
     return flagged
 
@@ -770,14 +767,12 @@ def model_from_segmentation(
         label: _measure(indices, mask.shape, affine, label, body_core_radius_mm)
         for label, indices in usable.items()
     }
-    order = sorted(first, key=lambda label: -first[label].centroid[2])
-    hints = _local_spine_axes([first[label].centroid for label in order])
+    cranial_first = sorted(first, key=lambda label: -first[label].centroid[2])
+    hints = _local_spine_axes([first[label].centroid for label in cranial_first])
 
     measured: dict[int, VertebraGeometry] = {
-        label: _measure(
-            usable[label], mask.shape, affine, label, body_core_radius_mm, hints[k]
-        )
-        for k, label in enumerate(order)
+        label: _measure(usable[label], mask.shape, affine, label, body_core_radius_mm, hints[k])
+        for k, label in enumerate(cranial_first)
     }
 
     keep = [
@@ -814,9 +809,7 @@ def model_from_segmentation(
             height_mm=np.array([measured[label].height_mm for label in keep]),
             source="ct-segmentation",
             meta={
-                "dropped": {
-                    label: measured[label] for label in measured if label not in set(keep)
-                },
+                "dropped": {label: measured[label] for label in measured if label not in set(keep)},
                 # Vertebrae whose measured tilt is not anatomy. Flagged rather
                 # than removed: dropping them would leave a gap in the level
                 # sequence and hide that the segmentation is wrong there.

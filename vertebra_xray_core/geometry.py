@@ -44,6 +44,7 @@ __all__ = [
 # frame conversion
 # --------------------------------------------------------------------------
 
+
 def to_math_frame(points: np.ndarray, height: float | None = None) -> np.ndarray:
     """Convert ``image``-frame points to the ``math`` frame.
 
@@ -84,6 +85,7 @@ def to_image_frame(points: np.ndarray, height: float | None = None) -> np.ndarra
 # --------------------------------------------------------------------------
 # vectors and angles
 # --------------------------------------------------------------------------
+
 
 def unit(v: np.ndarray, axis: int = -1) -> np.ndarray:
     """Normalise ``v`` along ``axis``; zero-length vectors are returned as-is."""
@@ -158,6 +160,7 @@ def tilt_deg(vectors: np.ndarray) -> np.ndarray | float:
 # --------------------------------------------------------------------------
 # 3-D helpers
 # --------------------------------------------------------------------------
+
 
 def project_onto_plane(v: np.ndarray, normal: np.ndarray) -> np.ndarray:
     """Component of ``v`` lying in the plane through the origin with ``normal``."""

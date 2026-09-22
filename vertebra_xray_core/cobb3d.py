@@ -208,7 +208,9 @@ def centroid_plane_normal(
     """
     labels = list(model.labels)
     try:
-        points = model.centroids[[labels.index(lab) for lab in (upper_label, apex_label, lower_label)]]
+        points = model.centroids[
+            [labels.index(lab) for lab in (upper_label, apex_label, lower_label)]
+        ]
     except ValueError as exc:
         raise ValueError(f"{exc.args[0]}; model spans {model.labels}") from None
     normal = np.cross(points[1] - points[0], points[2] - points[0])
@@ -271,9 +273,7 @@ def measure_between_levels(
     )
 
 
-def as_seen_on_film(
-    model: SpineModel3D, upper_label: str, lower_label: str, projection
-) -> float:
+def as_seen_on_film(model: SpineModel3D, upper_label: str, lower_label: str, projection) -> float:
     """Angle a reader would measure between the same two endplates on a film.
 
     This is deliberately *not* the same quantity as the corresponding field of
@@ -297,7 +297,8 @@ def as_seen_on_film(
     film = model.project(projection)
     i, j = film.index_of_label(upper_label), film.index_of_label(lower_label)
     tilts = film.body_tilt()
-    return float(abs(geo.wrap_to_signed_right_angle(tilts[i] - tilts[j])))
+    folded = float(geo.wrap_to_signed_right_angle(float(tilts[i] - tilts[j])))
+    return abs(folded)
 
 
 def cobb3d_for_curves(model: SpineModel3D, curves: tuple[Curve, ...]) -> tuple[Cobb3D, ...]:

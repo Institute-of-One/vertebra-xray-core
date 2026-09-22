@@ -12,9 +12,9 @@ PA = Projection(view="pa")
 
 
 def _frontal():
-    return phantom.adolescent_idiopathic_scoliosis(
-        main_thoracic_deg=45.0, lumbar_deg=30.0
-    ).project(PA)
+    return phantom.adolescent_idiopathic_scoliosis(main_thoracic_deg=45.0, lumbar_deg=30.0).project(
+        PA
+    )
 
 
 def test_zero_noise_leaves_the_measurement_untouched():

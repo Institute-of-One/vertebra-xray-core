@@ -90,7 +90,9 @@ def axial_rotation_costs() -> None:
     for psi in (0.0, 5.0, 10.0, 20.0, 30.0):
         bias = axial_rotation_bias(20.0, -15.0, psi)["normal_error_deg"]
         model = phantom.adolescent_idiopathic_scoliosis(axial_rotation_deg=psi)
-        divergence = np.abs(model.project(PA).body_tilt() - model.project(CONE_PA).body_tilt()).max()
+        divergence = np.abs(
+            model.project(PA).body_tilt() - model.project(CONE_PA).body_tilt()
+        ).max()
         lateral = model.project(LAT).with_labels(None)
         try:
             anchors = labeling.label_by_sagittal_inflection(lateral).anchors
@@ -107,7 +109,9 @@ def axial_rotation_costs() -> None:
         )
         error = np.abs(rebuilt.endplate_normals - model.endplate_normals).max()
         levels = labeling.label_from_model(rebuilt).labels == model.labels
-        print(f"    psi={psi:4.0f}  normal error {error:.1e}   levels {'correct' if levels else 'WRONG'}")
+        print(
+            f"    psi={psi:4.0f}  normal error {error:.1e}   levels {'correct' if levels else 'WRONG'}"
+        )
 
 
 def kyphosis_under_read() -> None:

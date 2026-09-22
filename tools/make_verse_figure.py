@@ -93,8 +93,17 @@ def figure(curves, scans, out: Path) -> None:
     plane = np.array([c["plane"] for c in curves])
 
     top = max(pmc.max(), coronal.max()) * 1.05
-    points = axes[0].scatter(coronal, pmc, c=np.abs(plane), cmap="magma_r", s=26,
-                             edgecolor="#333333", linewidth=0.3, vmin=0, vmax=90)
+    points = axes[0].scatter(
+        coronal,
+        pmc,
+        c=np.abs(plane),
+        cmap="magma_r",
+        s=26,
+        edgecolor="#333333",
+        linewidth=0.3,
+        vmin=0,
+        vmax=90,
+    )
     axes[0].plot([0, top], [0, top], color="#888888", lw=1.0, ls="--")
     axes[0].set_xlim(0, top)
     axes[0].set_ylim(0, top)
@@ -122,8 +131,7 @@ def figure(curves, scans, out: Path) -> None:
     axes[2].scatter(psi, err, s=14, alpha=0.5, color="#2f6f4f", edgecolor="none")
     grid = np.linspace(0, max(psi.max(), 1.0), 60)
     predicted = [axial_rotation_bias(20.0, -15.0, float(p))["normal_error_deg"] for p in grid]
-    axes[2].plot(grid, predicted, color="#b03030", lw=1.8,
-                 label="phantom prediction at 20/-15 deg")
+    axes[2].plot(grid, predicted, color="#b03030", lw=1.8, label="phantom prediction at 20/-15 deg")
     axes[2].set_xlabel("axial rotation present (deg)")
     axes[2].set_ylabel("endplate normal error (deg)")
     axes[2].set_title("c  the cost of assuming no axial rotation")

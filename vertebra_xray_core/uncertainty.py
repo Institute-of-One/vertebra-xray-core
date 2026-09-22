@@ -194,7 +194,9 @@ def bootstrap_cobb(
     for r in range(resamples):
         sample = jitter(lm, sigma, rng)
         for c, curve in enumerate(baseline.curves):
-            fixed[r, c] = _cobb._pair_angle(sample, curve.upper_index, curve.lower_index, definition)
+            fixed[r, c] = _cobb._pair_angle(
+                sample, curve.upper_index, curve.lower_index, definition
+            )
         found = _cobb.cobb_angles(sample, definition=definition, min_curve_deg=min_curve_deg)
         for c, curve in enumerate(baseline.curves):
             partner = _nearest_curve(found.curves, curve)

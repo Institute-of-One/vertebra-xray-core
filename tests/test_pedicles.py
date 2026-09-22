@@ -63,9 +63,7 @@ def test_without_pedicles_the_same_case_is_biased(psi):
     theta, phi = 20.0, -15.0
     alpha, beta = _measured_tilts(theta, phi, psi, LATERAL_SIGN)
     naive = solve_orientation(alpha, beta, 0.0)
-    naive_error = geo.angle_between(
-        endplate_normal(*naive), endplate_normal(theta, phi)
-    )
+    naive_error = geo.angle_between(endplate_normal(*naive), endplate_normal(theta, phi))
     with_pedicles = _round_trip(theta, phi, psi)
     assert naive_error > 0.35 * psi, "the bias grows with the rotation"
     assert (
@@ -85,9 +83,7 @@ def test_rotation_moves_the_pedicle_midpoint_and_narrows_the_pair():
 
     turned = project_pedicle_offsets(0.0, 0.0, 20.0, PEDICLES)
     midpoint = 0.5 * (turned[0] + turned[1])
-    assert midpoint == pytest.approx(
-        PEDICLES.posterior_offset * np.sin(np.radians(20.0)), abs=1e-9
-    )
+    assert midpoint == pytest.approx(PEDICLES.posterior_offset * np.sin(np.radians(20.0)), abs=1e-9)
     assert turned[1] - turned[0] < flat[1] - flat[0]
 
 

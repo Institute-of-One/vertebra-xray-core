@@ -189,7 +189,8 @@ def coverage(model: SpineModel3D) -> dict[str, object]:
         "caudal": model.labels[-1],
         "n_thoracic": len(thoracic),
         "n_lumbar": len(lumbar),
-        "spans_thoracolumbar": bool({"T12", "L1"} & levels) and len(thoracic) >= 3
+        "spans_thoracolumbar": bool({"T12", "L1"} & levels)
+        and len(thoracic) >= 3
         and len(lumbar) >= 2,
         "contiguous": tuple(model.labels) == nom.span(model.labels[0], model.labels[-1]),
     }

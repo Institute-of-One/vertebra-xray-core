@@ -13,12 +13,12 @@ comparable.
 from vertebra_xray_core import cobb, cobb3d, labeling, phantom
 from vertebra_xray_core.spine3d import Projection, reconstruct_from_biplanar
 
-model   = phantom.adolescent_idiopathic_scoliosis(main_thoracic_deg=45.0, lumbar_deg=30.0)
+model = phantom.adolescent_idiopathic_scoliosis(main_thoracic_deg=45.0, lumbar_deg=30.0)
 frontal = model.project(Projection(view="pa")).with_labels(None)
 lateral = model.project(Projection(view="lateral")).with_labels(None)
 
-levels  = labeling.label_biplanar(frontal, lateral)        # no training data involved
-spine   = reconstruct_from_biplanar(levels.apply(frontal), levels.apply(lateral))
+levels = labeling.label_biplanar(frontal, lateral)  # no training data involved
+spine = reconstruct_from_biplanar(levels.apply(frontal), levels.apply(lateral))
 
 for curve in cobb3d.cobb3d_for_curves(spine, cobb.cobb_angles(levels.apply(frontal)).curves):
     print(curve.describe())

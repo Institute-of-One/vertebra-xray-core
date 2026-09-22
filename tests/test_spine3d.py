@@ -238,9 +238,7 @@ def test_the_unrestricted_maximum_over_all_planes_is_degenerate():
     rng = np.random.default_rng(0)
     directions = rng.normal(size=(4000, 3))
     directions /= np.linalg.norm(directions, axis=1, keepdims=True)
-    unrestricted = max(
-        cobb3d.angle_in_plane(upper, lower, m) for m in directions
-    )
+    unrestricted = max(cobb3d.angle_in_plane(upper, lower, m) for m in directions)
     restricted, _ = cobb3d.plane_of_maximum_curvature(upper, lower)
 
     assert unrestricted > 89.0, "the unrestricted maximum saturates at a right angle"
@@ -276,8 +274,9 @@ def test_collinear_centroids_are_refused_rather_than_producing_a_plane():
     from dataclasses import replace
 
     straight = phantom.synthetic_spine(curves=())
-    straight = replace(straight, centroids=np.stack(
-        [np.array([0.0, 0.0, -30.0 * k]) for k in range(len(straight))]
-    ))
+    straight = replace(
+        straight,
+        centroids=np.stack([np.array([0.0, 0.0, -30.0 * k]) for k in range(len(straight))]),
+    )
     with pytest.raises(ValueError, match="collinear"):
         cobb3d.centroid_plane_normal(straight, "T2", "T6", "T10")

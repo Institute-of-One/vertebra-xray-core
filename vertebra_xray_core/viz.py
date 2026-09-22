@@ -67,7 +67,8 @@ def _require_matplotlib():
 
 def _hex_to_rgb(colour: str) -> tuple[float, float, float]:
     colour = colour.lstrip("#")
-    return tuple(int(colour[i : i + 2], 16) / 255.0 for i in (0, 2, 4))
+    red, green, blue = (int(colour[i : i + 2], 16) / 255.0 for i in (0, 2, 4))
+    return red, green, blue
 
 
 # --------------------------------------------------------------------------
@@ -560,11 +561,13 @@ def plot_radiograph(
         _, ax = plt.subplots(figsize=(4.0, 8.5))
     if polarity not in {"film", "transmission"}:
         raise ValueError(f"polarity must be 'film' or 'transmission', got {polarity!r}")
-    image = radiograph.image ** gamma if gamma != 1.0 else radiograph.image
+    image = radiograph.image**gamma if gamma != 1.0 else radiograph.image
     ax.imshow(
         image,
         cmap="gray_r" if polarity == "film" else "gray",
-        origin="lower", extent=radiograph.extent, aspect="equal",
+        origin="lower",
+        extent=radiograph.extent,
+        aspect="equal",
         interpolation="bilinear",
     )
     ax.set_axis_off()
@@ -596,15 +599,27 @@ def plot_landmark_overlay(
         outline = quads[index][[UL, UR, LR, LL, UL]]
         ax.plot(outline[:, 0], outline[:, 1], color=corner_colour, lw=0.8, alpha=0.75, zorder=10)
         ax.plot(
-            quads[index][:, 0], quads[index][:, 1], "o", ms=3.2,
-            mfc=corner_colour, mec="#0b2b4a", mew=0.4, zorder=12,
+            quads[index][:, 0],
+            quads[index][:, 1],
+            "o",
+            ms=3.2,
+            mfc=corner_colour,
+            mec="#0b2b4a",
+            mew=0.4,
+            zorder=12,
         )
 
     if pedicles is not None:
         flat = np.asarray(pedicles, dtype=float).reshape(-1, 2)
         ax.plot(
-            flat[:, 0], flat[:, 1], "o", ms=4.2,
-            mfc=pedicle_colour, mec="#5a4400", mew=0.5, zorder=13,
+            flat[:, 0],
+            flat[:, 1],
+            "o",
+            ms=4.2,
+            mfc=pedicle_colour,
+            mec="#5a4400",
+            mew=0.5,
+            zorder=13,
         )
 
     for curve in curves:
@@ -615,7 +630,9 @@ def plot_landmark_overlay(
             extend = 2.6
             ax.plot(
                 *zip(mid + extend * (a - mid), mid + extend * (b - mid), strict=True),
-                color=cobb_colour, lw=1.6, zorder=14,
+                color=cobb_colour,
+                lw=1.6,
+                zorder=14,
             )
 
     if landmarks.labels is not None:
@@ -627,7 +644,10 @@ def plot_landmark_overlay(
                 landmarks.centroids[index, 0] - offset,
                 landmarks.centroids[index, 1],
                 label,
-                fontsize=6.5, va="center", ha="right", zorder=15,
+                fontsize=6.5,
+                va="center",
+                ha="right",
+                zorder=15,
                 color="#f2f2f2",
                 bbox={"facecolor": "#1a1a1a", "alpha": 0.55, "pad": 0.8, "edgecolor": "none"},
             )

@@ -149,8 +149,9 @@ def test_the_body_alone_cannot_give_an_axial_rotation():
     median of 27 degrees of apparent rotation where the truth is near zero.
     """
     theta, phi, psi = 6.0, -4.0, 0.0
-    square = _vertebra_points(theta, phi, psi, width=36.0, depth=35.0,
-                              with_posterior_elements=False)
+    square = _vertebra_points(
+        theta, phi, psi, width=36.0, depth=35.0, with_posterior_elements=False
+    )
     centred = square - square.mean(axis=0)
     spread = np.sort(np.linalg.eigvalsh(centred.T @ centred / len(centred)))
     # The two in-plane eigenvalues, largest and middle, are within a few per
@@ -231,8 +232,9 @@ def test_the_centroid_lands_where_the_body_was_put():
 
 
 def test_implausible_proportions_are_rejected():
-    geometry = _single(0.0, 0.0, 0.0, width=20.0, depth=18.0, height=62.0,
-                       with_posterior_elements=False)
+    geometry = _single(
+        0.0, 0.0, 0.0, width=20.0, depth=18.0, height=62.0, with_posterior_elements=False
+    )
     assert not geometry.looks_like_a_vertebral_body
 
 

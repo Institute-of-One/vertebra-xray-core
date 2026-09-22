@@ -119,6 +119,7 @@ def _vertebra_parts(model: SpineModel3D, index: int):
     # mark argues against itself.
     pedicle = normative_pedicles(model.labels[index])
 
+    # fmt: off
     shell = 2.0
     parts = [
         ((width / 2, depth / 2, height / 2), (0.0, 0.0, 0.0), ATTENUATION["trabecular"]),
@@ -152,6 +153,7 @@ def _vertebra_parts(model: SpineModel3D, index: int):
     parts.append(  # spinous process
         ((3.0, 10.0, 7.0), (0.0, -pedicle.posterior_offset - 22.0, -3.0), ATTENUATION["cortical"])
     )
+    # fmt: on
     return parts
 
 
@@ -173,8 +175,18 @@ def _accumulate_spine(model, volume, origin, spacing):
 #: widens from the apex down to about T8 and narrows again towards the
 #: thoracolumbar junction; a constant radius makes the ribs read as a spring.
 _RIB_HALF_WIDTH = {
-    "T1": 42.0, "T2": 58.0, "T3": 72.0, "T4": 84.0, "T5": 94.0, "T6": 102.0,
-    "T7": 108.0, "T8": 110.0, "T9": 107.0, "T10": 99.0, "T11": 84.0, "T12": 66.0,
+    "T1": 42.0,
+    "T2": 58.0,
+    "T3": 72.0,
+    "T4": 84.0,
+    "T5": 94.0,
+    "T6": 102.0,
+    "T7": 108.0,
+    "T8": 110.0,
+    "T9": 107.0,
+    "T10": 99.0,
+    "T11": 84.0,
+    "T12": 66.0,
 }
 
 
@@ -289,8 +301,15 @@ def _torso(model, volume, origin, spacing):
     # used because it passes through the knots without overshooting them into
     # a flare the anatomy does not have.
     knots = np.array(
-        [hip - 210.0, hip - 110.0, hip + 30.0, diaphragm - 20.0,
-         lung_apex - 46.0, lung_apex + 30.0, lung_apex + 130.0]
+        [
+            hip - 210.0,
+            hip - 110.0,
+            hip + 30.0,
+            diaphragm - 20.0,
+            lung_apex - 46.0,
+            lung_apex + 30.0,
+            lung_apex + 130.0,
+        ]
     )
     knots = np.maximum.accumulate(knots) + np.arange(7) * 1e-3
     width_of = PchipInterpolator(knots, np.array([132.0, 174.0, 166.0, 118.0, 148.0, 156.0, 56.0]))
@@ -374,7 +393,9 @@ def _shoulder_girdle(model, volume, origin, spacing):
         offset = np.linalg.norm(points - centre, axis=1)
         _deposit(volume, origin, spacing, points[offset <= 25.0], ATTENUATION["trabecular"])
         _deposit(
-            volume, origin, spacing,
+            volume,
+            origin,
+            spacing,
             points[(offset <= 25.0) & (offset >= 21.5)],
             ATTENUATION["humerus"],
         )
@@ -392,25 +413,35 @@ def _shoulder_girdle(model, volume, origin, spacing):
         t = np.linspace(0.0, 1.0, 44)
         for step in np.linspace(0.0, 1.0, 34):
             _deposit(
-                volume, origin, spacing,
-                root + np.stack(
-                    [np.full_like(t, side * (44.0 + 88.0 * step)),
-                     -58.0 - 16.0 * step + 6.0 * t,
-                     -6.0 - 118.0 * t + 46.0 * step * (1.0 - t)],
+                volume,
+                origin,
+                spacing,
+                root
+                + np.stack(
+                    [
+                        np.full_like(t, side * (44.0 + 88.0 * step)),
+                        -58.0 - 16.0 * step + 6.0 * t,
+                        -6.0 - 118.0 * t + 46.0 * step * (1.0 - t),
+                    ],
                     axis=1,
                 ),
-                ATTENUATION["scapula"], thickness=3.0,
+                ATTENUATION["scapula"],
+                thickness=3.0,
             )
 
         # Clavicle, an S from the sternal end out to the acromion.
         c = np.linspace(0.0, 1.0, 50)
         _tube(
-            volume, origin, spacing,
-            root + np.stack(
+            volume,
+            origin,
+            spacing,
+            root
+            + np.stack(
                 [side * 126.0 * c, 54.0 - 62.0 * c**1.4, 14.0 - 44.0 * c**1.6],
                 axis=1,
             ),
-            5.0, ATTENUATION["clavicle"],
+            5.0,
+            ATTENUATION["clavicle"],
         )
 
 
@@ -457,7 +488,9 @@ def _pelvis(model, volume, origin, spacing):
         points = _local_grid(centre, half, np.eye(3), spacing)
         inner = (half[0] - spacing, half[1] - spacing, half[2])
         _deposit(
-            volume, origin, spacing,
+            volume,
+            origin,
+            spacing,
             points[_rounded_box(points - centre, inner, 3.0)],
             ATTENUATION["sacrum"],
         )
@@ -475,14 +508,21 @@ def _pelvis(model, volume, origin, spacing):
         # the wing is a solid paddle, and drawn too thin it is a wire.
         for step in np.linspace(0.0, 1.0, 40):
             _deposit(
-                volume, origin, spacing,
+                volume,
+                origin,
+                spacing,
                 base + np.column_stack([rail, brim + (crest - brim) * step]),
-                ATTENUATION["iliac_wing"], thickness=3.5,
+                ATTENUATION["iliac_wing"],
+                thickness=3.5,
             )
         for margin, radius in ((crest, 5.0), (brim, 4.0)):
             _tube(
-                volume, origin, spacing, base + np.column_stack([rail, margin]),
-                radius, ATTENUATION["pelvic_rim"],
+                volume,
+                origin,
+                spacing,
+                base + np.column_stack([rail, margin]),
+                radius,
+                ATTENUATION["pelvic_rim"],
             )
 
     symphysis = np.array([0.0, 74.0, -86.0])
@@ -493,27 +533,45 @@ def _pelvis(model, volume, origin, spacing):
 
         # Superior pubic ramus, from the anterior spine in to the symphysis,
         # and the ischiopubic ramus closing the obturator ring beneath it.
-        _tube(volume, origin, spacing,
-              base + spine + (symphysis + np.array([side * 20.0, 0.0, 0.0]) - spine) * r,
-              6.0, ATTENUATION["pelvic_rim"])
-        _tube(volume, origin, spacing,
-              base + symphysis + np.array([side * 20.0, 0.0, 0.0])
-              + (tuberosity - symphysis - np.array([side * 20.0, 0.0, 0.0])) * r
-              + np.array([0.0, 0.0, -18.0]) * np.sin(np.pi * r),
-              6.0, ATTENUATION["sacrum"])
+        _tube(
+            volume,
+            origin,
+            spacing,
+            base + spine + (symphysis + np.array([side * 20.0, 0.0, 0.0]) - spine) * r,
+            6.0,
+            ATTENUATION["pelvic_rim"],
+        )
+        _tube(
+            volume,
+            origin,
+            spacing,
+            base
+            + symphysis
+            + np.array([side * 20.0, 0.0, 0.0])
+            + (tuberosity - symphysis - np.array([side * 20.0, 0.0, 0.0])) * r
+            + np.array([0.0, 0.0, -18.0]) * np.sin(np.pi * r),
+            6.0,
+            ATTENUATION["sacrum"],
+        )
 
         # Acetabular body, carrying the wing down to the hip joint.
         drop = np.linspace(0.0, 1.0, 26)
         for offset in np.linspace(-24.0, 24.0, 16):
             _deposit(
-                volume, origin, spacing,
-                base + np.stack(
-                    [side * (half_w + 92.0 + 6.0 * drop),
-                     np.full_like(drop, 12.0 + offset),
-                     -50.0 - 38.0 * drop],
+                volume,
+                origin,
+                spacing,
+                base
+                + np.stack(
+                    [
+                        side * (half_w + 92.0 + 6.0 * drop),
+                        np.full_like(drop, 12.0 + offset),
+                        -50.0 - 38.0 * drop,
+                    ],
                     axis=1,
                 ),
-                ATTENUATION["iliac_wing"], thickness=4.0,
+                ATTENUATION["iliac_wing"],
+                thickness=4.0,
             )
 
         head = base + np.array([side * (half_w + 94.0), 12.0, -84.0])
@@ -521,7 +579,9 @@ def _pelvis(model, volume, origin, spacing):
         offset = np.linalg.norm(points - head, axis=1)
         _deposit(volume, origin, spacing, points[offset <= 23.0], ATTENUATION["trabecular"])
         _deposit(
-            volume, origin, spacing,
+            volume,
+            origin,
+            spacing,
             points[(offset <= 23.0) & (offset >= 20.0)],
             ATTENUATION["femoral_head"],
         )
@@ -530,20 +590,29 @@ def _pelvis(model, volume, origin, spacing):
         # floating below the pelvis rather than the top of a femur.
         neck = np.linspace(0.0, 1.0, 40)
         _tube(
-            volume, origin, spacing,
-            base + np.stack(
-                [side * (half_w + 94.0 + 26.0 * neck), np.full_like(neck, 12.0),
-                 -84.0 - 24.0 * neck],
+            volume,
+            origin,
+            spacing,
+            base
+            + np.stack(
+                [
+                    side * (half_w + 94.0 + 26.0 * neck),
+                    np.full_like(neck, 12.0),
+                    -84.0 - 24.0 * neck,
+                ],
                 axis=1,
             ),
-            11.0, ATTENUATION["trabecular"],
+            11.0,
+            ATTENUATION["trabecular"],
         )
         trochanter = base + np.array([side * (half_w + 120.0), 10.0, -110.0])
         points = _local_grid(trochanter, (18.0, 18.0, 18.0), np.eye(3), spacing)
         offset = np.linalg.norm(points - trochanter, axis=1)
         _deposit(volume, origin, spacing, points[offset <= 15.0], ATTENUATION["trabecular"])
         _deposit(
-            volume, origin, spacing,
+            volume,
+            origin,
+            spacing,
             points[(offset <= 15.0) & (offset >= 12.5)],
             ATTENUATION["pelvic_rim"],
         )

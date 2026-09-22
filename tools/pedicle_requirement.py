@@ -53,17 +53,13 @@ def residual_bias(
     got_theta, got_phi, _ = solve_orientation_with_pedicles(
         alpha, beta, (float(offsets[0]), float(offsets[1])), assumed
     )
-    return geo.angle_between(
-        endplate_normal(got_theta, got_phi), endplate_normal(theta, phi)
-    )
+    return geo.angle_between(endplate_normal(got_theta, got_phi), endplate_normal(theta, phi))
 
 
 def bias_without_pedicles(theta: float, phi: float, psi: float) -> float:
     alpha, beta = _measured_tilts(theta, phi, psi, LATERAL_SIGN)
     got_theta, got_phi = solve_orientation(alpha, beta, 0.0)
-    return geo.angle_between(
-        endplate_normal(got_theta, got_phi), endplate_normal(theta, phi)
-    )
+    return geo.angle_between(endplate_normal(got_theta, got_phi), endplate_normal(theta, phi))
 
 
 def phantom_sweep(resamples: int = 400, seed: int = 0) -> None:
@@ -74,12 +70,12 @@ def phantom_sweep(resamples: int = 400, seed: int = 0) -> None:
     print("\nPhantom: orientations drawn uniformly over the anatomical range")
     print("  coronal tilt +-35 deg, sagittal +-30 deg, axial rotation +-30 deg")
     print(f"  pedicle geometry exact, {resamples} draws per row\n")
-    print(f"  {'pedicle error':>14}  {'median':>7} {'p90':>7} {'max':>7}   endplate normal error (deg)")
+    print(
+        f"  {'pedicle error':>14}  {'median':>7} {'p90':>7} {'max':>7}   endplate normal error (deg)"
+    )
 
     baseline = [
-        bias_without_pedicles(
-            rng.uniform(-35, 35), rng.uniform(-30, 30), rng.uniform(-30, 30)
-        )
+        bias_without_pedicles(rng.uniform(-35, 35), rng.uniform(-30, 30), rng.uniform(-30, 30))
         for _ in range(resamples)
     ]
     print(
@@ -95,9 +91,7 @@ def phantom_sweep(resamples: int = 400, seed: int = 0) -> None:
                 rng.uniform(-30, 30),
                 rng.uniform(-30, 30),
             )
-            values.append(
-                residual_bias(theta, phi, psi, pedicles, pedicles, error, rng)
-            )
+            values.append(residual_bias(theta, phi, psi, pedicles, pedicles, error, rng))
         print(
             f"  {error:11.2f} mm  {np.median(values):7.2f} "
             f"{np.quantile(values, 0.9):7.2f} {max(values):7.2f}"
@@ -185,7 +179,9 @@ def verse_sweep(root: str, seed: int = 2) -> None:
     )
 
     baseline = [bias_without_pedicles(t, p, s) for t, p, s, _, _ in cases]
-    print(f"  {'pedicle error':>14}  {'median':>7} {'p90':>7} {'max':>7}   endplate normal error (deg)")
+    print(
+        f"  {'pedicle error':>14}  {'median':>7} {'p90':>7} {'max':>7}   endplate normal error (deg)"
+    )
     print(
         f"  {'no pedicles':>14}  {np.median(baseline):7.2f} "
         f"{np.quantile(baseline, 0.9):7.2f} {max(baseline):7.2f}   (axial rotation assumed zero)"

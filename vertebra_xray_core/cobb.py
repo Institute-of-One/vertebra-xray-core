@@ -91,8 +91,7 @@ class Curve:
         lower = self.lower_label or f"#{self.lower_index}"
         apex = self.apex_label or f"#{self.apex_index}"
         return (
-            f"{name} {self.angle_deg:.1f} deg {upper}-{lower}, "
-            f"apex {apex}, convex {self.convexity}"
+            f"{name} {self.angle_deg:.1f} deg {upper}-{lower}, apex {apex}, convex {self.convexity}"
         )
 
 
@@ -162,7 +161,9 @@ def _apex(lm: SpineLandmarks, upper: int, lower: int) -> tuple[int, float]:
     return int(idx[k]), float(dev[k])
 
 
-def _patient_side(deviation: float, view: str, right_on_image_left: bool) -> Literal["left", "right"]:
+def _patient_side(
+    deviation: float, view: str, right_on_image_left: bool
+) -> Literal["left", "right"]:
     """Translate a ``+x`` deviation in the ``math`` frame into a patient side.
 
     Frontal radiographs are conventionally displayed as though facing the
@@ -272,7 +273,8 @@ def _name_curves(curves: tuple[Curve, ...], labelled: bool) -> tuple[Curve, ...]
     names: list[str | None] = [None] * len(curves)
 
     if labelled and all(c.apex_label is not None for c in curves):
-        regions = [_APEX_REGION.get(c.apex_label, "thoracic") for c in curves]
+        apex_labels = [c.apex_label or "" for c in curves]
+        regions = [_APEX_REGION.get(label, "thoracic") for label in apex_labels]
         thoracic = [i for i, r in enumerate(regions) if r in ("thoracic", "cervicothoracic")]
         # With two or more thoracic curves the caudal one is the main
         # thoracic curve and everything above it is proximal thoracic.
@@ -294,9 +296,7 @@ def _name_curves(curves: tuple[Curve, ...], labelled: bool) -> tuple[Curve, ...]
             elif i > major_at:
                 names[i] = "TL/L"
 
-    return tuple(
-        _replace(c, name=names[i], is_major=(i == major_at)) for i, c in enumerate(curves)
-    )
+    return tuple(_replace(c, name=names[i], is_major=(i == major_at)) for i, c in enumerate(curves))
 
 
 def cobb_angles(
@@ -336,7 +336,9 @@ def _pairwise_angle_matrix(lm: SpineLandmarks, definition: Definition) -> np.nda
     return np.abs(np.asarray(geo.wrap_to_signed_right_angle(diff), dtype=float))
 
 
-def all_pairs_max(lm: SpineLandmarks, *, definition: Definition = "body_axis") -> tuple[float, int, int]:
+def all_pairs_max(
+    lm: SpineLandmarks, *, definition: Definition = "body_axis"
+) -> tuple[float, int, int]:
     """Largest angle between any two vertebral vectors, and the pair achieving it.
 
     This is the unambiguous half of the AASCE convention and the number most

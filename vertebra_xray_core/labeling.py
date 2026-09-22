@@ -267,7 +267,9 @@ def _refine_reversal(profile: np.ndarray, lo: int, k: int, hi: int) -> float:
     return float(crossing) if abs(crossing - k) <= 1.0 else float(k)
 
 
-def _find_anchors(profile: np.ndarray, min_reversal_deg: float) -> list[tuple[str, int, float]]:
+def _find_anchors(
+    profile: np.ndarray, min_reversal_deg: float
+) -> list[tuple[str, int, float, float]]:
     """Interior turning points of the profile, classified by which way they turn.
 
     With the profile oriented so that kyphosis falls caudally, the
@@ -334,6 +336,8 @@ def label_by_sagittal_inflection(
         )
     profile = _sagittal_profile(lateral, anterior_on_image_left)
     return _label_from_profile(profile, min_reversal_deg, "sagittal")
+
+
 def _label_from_profile(
     profile: np.ndarray, min_reversal_deg: float, origin: str
 ) -> LabelingResult:
@@ -383,9 +387,7 @@ def _label_from_profile(
 
     found = []
     if ct is not None:
-        found.append(
-            Anchor("cervicothoracic", ct[1], nom.CERVICOTHORACIC_JUNCTION, ct[2], ct[3])
-        )
+        found.append(Anchor("cervicothoracic", ct[1], nom.CERVICOTHORACIC_JUNCTION, ct[2], ct[3]))
     if tl is not None:
         found.append(Anchor("thoracolumbar", tl[1], nom.THORACOLUMBAR_JUNCTION, tl[2], tl[3]))
     anchors = tuple(found)
