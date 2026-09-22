@@ -89,7 +89,7 @@ taken perpendicular to the plane through the end vertebrae and the apex
 (2), and it is formalised in the Scoliosis Research Society's
 three-dimensional terminology (3). Recent work measures the plane of
 maximum curvature from computed tomography (4) and estimates it
-computationally (5). **This paper claims none of that as new.**
+computationally (5). This paper claims none of that as new.
 
 A recent method computes a three-dimensional scoliosis angle from four endplate angles
 measured on a standing frontal and lateral pair, validated in 41 patients
@@ -128,13 +128,13 @@ This paper contributes the following.
 ### 2.1 Coordinate conventions and vertebral orientation
 
 Right-handed patient frame: *X* towards the patient's left, *Y* anterior, *Z*
-cranial. Vertebral orientation is *R* = *R_y*(θ)·*R_x*(φ)·*R_z*(ψ), being
+cranial. Vertebral orientation is *R* = *R*~y~(θ)·*R*~x~(φ)·*R*~z~(ψ), being
 coronal tilt, sagittal tilt and axial rotation.
 
 The order is not arbitrary. Because ψ acts first, about the vertebra's own
-cranio-caudal axis, *R*·**e**_z = *R_y*·*R_x*·**e**_z: **the endplate normal,
+cranio-caudal axis, *R*·**e**~z~ = *R*~y~·*R*~x~·**e**~z~: the endplate normal,
 and therefore every three-dimensional angle reported here, is independent of
-axial rotation.** The endplate's lateral and antero-posterior directions,
+axial rotation. The endplate's lateral and antero-posterior directions,
 which are what a radiograph shows, are not. That asymmetry is the source of
 the identifiability problem.
 
@@ -154,7 +154,7 @@ endplate-normal error < 10⁻⁶ °). With ψ unknown, it is not determined.
 
 ### 2.3 Pedicles as the third constraint
 
-**Figure 1** shows what this amounts to on a film: the four corners a detector
+Figure 1 shows what this amounts to on a film: the four corners a detector
 already places, and the two pedicle points it is being asked to add.
 
 The pedicles lie lateral to the midline and, decisively, posterior to the
@@ -171,7 +171,7 @@ constraint in a joint solve for all three rotations.
 ### 2.4 Which plane the three-dimensional angle is measured in
 
 "The largest Cobb angle" requires the family of admissible planes to be
-stated. **The maximum over all planes is degenerate**: for any two
+stated. The maximum over all planes is degenerate: for any two
 non-parallel endplates there is a viewing direction making their traces
 perpendicular, so the unrestricted maximum is 90° for every curve and carries
 no information. Restricting to planes containing the cranio-caudal axis makes
@@ -204,7 +204,7 @@ Anthropomorphic digital phantoms and digitally reconstructed radiographs are
 long established (14), and nothing here is new as imaging physics:
 scatter, beam hardening and trabecular texture are not modelled, and the
 attenuation values were chosen to order correctly rather than to match a
-measured spectrum. **No result in this paper is measured from it.** It is
+measured spectrum. No result in this paper is measured from it. It is
 used because the renderer and the measurement code share one geometry object,
 so landmarks projected by the forward model of section 2.2 fall on the
 anatomy that was drawn, and because it carries no patient data and no
@@ -240,7 +240,7 @@ reconstruction was not exact.
 
 ### 2.8 Scope
 
-Landmark detection from radiographic pixels was **not** evaluated. Landmarks
+Landmark detection from radiographic pixels was not evaluated. Landmarks
 were projected from the CT-derived model and detector error injected as a
 stated perturbation. This isolates the measurement layer, which is the subject
 of the paper.
@@ -279,7 +279,7 @@ sagittal ±30°, axial ±30°), the endplate normal recovered from four corners
 per view was in error by a median of 5.60°, 90th percentile 12.82°, maximum
 22.84°, growing linearly with the rotation present to 12.8° at 30°.
 
-**Table 1** and **Figure 2a**.
+Table 1 and Figure 2a.
 
 ### 3.3 Two pedicle landmarks make it identifiable
 
@@ -296,13 +296,13 @@ With exact pedicles the solution was exact (maximum error 2.5 × 10⁻¹² ° ov
 | 0.25 mm | 0.10 | 0.27 | 0.68 |
 | exact | 0.00 | 0.00 | 0.00 |
 
-Degrees of endplate-normal error. **Figure 2b.**
+Degrees of endplate-normal error. Figure 2b.
 
 The 90th-percentile residual is 0.57° at 0.5 mm and 1.18° at 1 mm, so it
 crosses 1° at about 0.85 mm. Published whole-spine
 landmark detectors report median localisation errors of 1.5–2.4 mm cervical,
-2.1–3.0 mm lumbosacral and 2.4–4.3 mm thoracic (19,20,21), so **a
-millimetre is a target rather than a current capability**. At 3 mm — the thoracic spine as
+2.1–3.0 mm lumbosacral and 2.4–4.3 mm thoracic (19,20,21), so a
+millimetre is a target rather than a current capability. At 3 mm — the thoracic spine as
 reported today, and where the deformity usually is — the median bias still
 falls from 5.60° to 1.25°.
 
@@ -312,7 +312,7 @@ Taking the half-separation and posterior offset from a table rather than
 measuring them cost a median of 0.13° at 1 mm of table error and 0.27° at
 2 mm. The interquartile spread observed across the 394 vertebrae was 12.3–15.4 mm
 in separation and 25.0–29.4 mm in posterior offset, inside the regime where it
-does not matter. **Figure 2c**, **Table 2**.
+does not matter. Figure 2c, Table 2.
 
 | level | T1 | T4 | T7 | T10 | T12 | L1 | L3 | L5 |
 |---|---|---|---|---|---|---|---|---|
@@ -352,7 +352,7 @@ centroid plane is tilted a median of 5.2° (maximum 28.9°) from vertical, which
 places it outside the family a rotating radiograph can realise and explains
 the seven curves in which its angle exceeded the vertical-plane maximum.
 
-**Figure 3.**
+Figure 3.
 
 **The ratio is not the finding.** The plane of maximum curvature lies a median
 of 53.6° from coronal (90th percentile 76.1°), and over the same level pairs
@@ -385,7 +385,7 @@ dataset.
 
 ### 3.7 Robustness to landmark error
 
-Medians across the 28 spines of the **worst vertebra in each spine**, with
+Medians across the 28 spines of the worst vertebra in each spine, with
 isotropic Gaussian error on every corner before any measurement. Per-vertebra
 medians over the pooled 394 vertebrae are several times smaller (section 3.5);
 the per-spine worst case is reported here because a measurement is only as
@@ -407,7 +407,7 @@ detector, that limits the result.
 **Cone-beam divergence.** With no axial rotation the chord a reader marks on a
 frontal film lies in a plane of constant depth, so both ends are magnified
 identically and the coronal tilt is exactly invariant (difference < 10⁻¹³ °).
-At 20° of axial rotation the same comparison gives 4.5° (**Figure 5**). Treating a long film
+At 20° of axial rotation the same comparison gives 4.5° (Figure 5). Treating a long film
 as a parallel projection is an identity, not an approximation, until the spine
 rotates.
 
@@ -415,13 +415,13 @@ rotates.
 body's antero-posterior axis out of the sagittal plane, so the
 anterior-to-posterior chord is not the sagittal trace of the endplate. On
 phantoms the T1–T12 sagittal angle was under-read by 0.0°, 1.7°, 3.5° and 8.0°
-at main thoracic curves of 0°, 25°, 50° and 75°. **Figure 6.**
+at main thoracic curves of 0°, 25°, 50° and 75°. Figure 6.
 
 **Uncertainty decomposition.** Under corner error the choice of end vertebrae
 contributed none of the variance below 1.5 mm, 6% at 2 mm, a third at 3 mm and
 half at 4 mm. This is a lower bound on the discrete term: independent corner
 jitter is a poor model of how two readers come to disagree about which
-vertebra ends a curve (23). **Figure 7.**
+vertebra ends a curve (23). Figure 7.
 
 ---
 
@@ -468,8 +468,8 @@ d'élection* tilts furthest out of vertical.
 4. The quality check on segmentation is a heuristic, though it flagged exactly
    the scans where the reconstruction failed.
 A training-free method for assigning vertebral levels from the sagittal
-curvature reversal was developed alongside this work and is **deliberately
-held for a separate report**. It is correct in every phantom case tested with
+curvature reversal was developed alongside this work and is deliberately
+held for a separate report. It is correct in every phantom case tested with
 standing geometry, but correct in only 4 of 30 supine VerSe scans and within
 one level in 21 of 30, because supine positioning flattens lumbar lordosis and
 moves the sagittal inflection from T12 to L1. That posture dependence is worth
