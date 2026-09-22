@@ -354,7 +354,9 @@ def geo_angle(u, v):
 
 def _save(fig, path: Path) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    fig.savefig(path, bbox_inches="tight")
+    # QIMS asks for at least 300 dpi; matplotlib defaults to 100 and the
+    # figures were going out at 150.
+    fig.savefig(path, bbox_inches="tight", dpi=400)
     plt.close(fig)
     print(f"wrote {path}")
 

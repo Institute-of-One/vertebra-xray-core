@@ -131,7 +131,7 @@ def figure(curves, scans, out: Path) -> None:
 
     fig.tight_layout()
     out.parent.mkdir(parents=True, exist_ok=True)
-    fig.savefig(out, bbox_inches="tight")
+    fig.savefig(out, bbox_inches="tight", dpi=400)  # QIMS asks for 300 dpi or better
     plt.close(fig)
     print(f"wrote {out}")
 
