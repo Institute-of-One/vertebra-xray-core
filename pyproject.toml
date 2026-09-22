@@ -9,7 +9,7 @@ description = "Training-free vertebral labelling and three-dimensional Cobb angl
 readme = "README.md"
 license = { text = "MIT" }
 requires-python = ">=3.10"
-authors = [{ name = "Institute of One, LISIT Co., Ltd." }]
+authors = [{ name = "Shuji Yamamoto", email = "yamamoto@lisit.jp" }]
 keywords = ["scoliosis", "Cobb angle", "spine", "radiography", "biplanar", "vertebral labelling"]
 classifiers = [
   "Development Status :: 3 - Alpha",

@@ -19,9 +19,13 @@ angle measured from biplanar radiographs
 
 **Running title.** Identifiability of the biplanar three-dimensional Cobb angle
 
-**Authors.** **[TBC: name as it should appear in print, full affiliation with
-city and country, ORCID, and the corresponding author's postal address and
-e-mail. The submission system does not allow this to be changed afterwards.]**
+**Author.** Shuji Yamamoto
+
+**Affiliation.** Institute of One, LISIT Co., Ltd., Tokyo 150-0044, Japan
+
+**ORCID.** 0000-0001-9211-1071
+
+**Correspondence.** Shuji Yamamoto, Institute of One, LISIT Co., Ltd., Tokyo 150-0044, Japan. E-mail: yamamoto@lisit.jp
 
 **Counts.** Main text approximately 3,100 words (excluding the title page,
 abstract, references, figure legends and tables); abstract 435 words; 7
@@ -500,16 +504,16 @@ paper was transcribed between aggregations.
 
 ## Author Contributions
 
-**[TBC: assign each role. For a single author all seven fall to that author,
-and the section is still required.]**
+Shuji Yamamoto is the sole author and performed all of the following:
 
 (I) Conception and design;
 (II) Administrative support;
-(III) Provision of study materials or patients;
+(III) Provision of study materials or patients — not applicable, no patients
+were involved;
 (IV) Collection and assembly of data;
 (V) Data analysis and interpretation;
-(VI) Manuscript writing: all authors;
-(VII) Final approval of manuscript: all authors.
+(VI) Manuscript writing;
+(VII) Final approval of manuscript.
 
 ---
 
@@ -537,11 +541,15 @@ accompanying repository. The analysis code, the phantoms and the scripts that
 produce every number and figure are available at **[TBC: repository URL]**,
 archived at **[TBC: Zenodo DOI]**.
 
-*Conflicts of Interest:* **[TBC: the author must declare the commercial
-graphical interface built on this measurement core, naming the company and the
-nature of the relationship. State it plainly; a disclosed commercial interest
-is not a defect, an undisclosed one is. Completed ICMJE uniform disclosure
-forms are required at submission.]**
+*Conflicts of Interest:* The author is affiliated with LISIT Co., Ltd., which
+is developing a commercial graphical application built on the measurement core
+described in this article. The core itself, including every method reported
+here and the code that produces every number and figure, is released under the
+MIT licence and is freely available; the company's product adds a user
+interface and clinical workflow around it and is not required to reproduce or
+use any result in this paper. **[TBC: state the nature of the relationship
+with the company — employment, directorship, shareholding — as the ICMJE form
+requires, and complete that form at submission.]**
 
 *Ethical Statement:* The authors are accountable for all aspects of the work in ensuring that questions related to the accuracy or integrity of any part of the work are appropriately investigated and resolved. This study analysed only computational
 phantoms and the publicly available, de-identified VerSe collection. No

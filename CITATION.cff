@@ -17,11 +17,12 @@ abstract: >-
 type: software
 license: MIT
 version: 0.1.0
-# TODO before the release is archived: replace with the real authors,
-# affiliations and ORCIDs. Zenodo takes its creator list from this file.
 authors:
-  - name: "Institute of One, LISIT Co., Ltd."
-    website: "https://lisit.co.jp"
+  - given-names: Shuji
+    family-names: Yamamoto
+    email: yamamoto@lisit.jp
+    orcid: "https://orcid.org/0000-0001-9211-1071"
+    affiliation: "Institute of One, LISIT Co., Ltd., Tokyo 150-0044, Japan"
 repository-code: "https://github.com/Institute-of-One/vertebra-xray-core"
 keywords:
   - scoliosis
